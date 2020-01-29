@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.11.0, 2020-01-25T16:57:10. -->
+<!-- Written by QtCreator 4.11.0, 2020-01-28T20:43:26. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -285,8 +285,9 @@
     </valuelist>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/robin/Documents/stanford/cs106b/Assignment 3/Recursion.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/robin/Documents/stanford/cs106b/Assignment 3/Recursion.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Recursion2</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/robin/Documents/stanford/cs106b/cs106b/Assignment 3/Recursion.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/robin/Documents/stanford/cs106b/cs106b/Assignment 3/Recursion.pro</value>
     <value type="QString" key="RunConfiguration.Arguments"></value>
     <value type="bool" key="RunConfiguration.Arguments.multi">false</value>
     <value type="QString" key="RunConfiguration.OverrideDebuggerStartup"></value>

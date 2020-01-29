@@ -2,6 +2,8 @@
 #include "error.h"
 using namespace std;
 
+
+
 /**
  * Draws a triangle with the specified corners in the specified window. Feel free
  * to edit this function as you see fit to change things like color, fill style,

@@ -7,7 +7,7 @@ using namespace std;
 
 
 /**
-This recursive function takes as input a HashSet of assigned shifts, then returns
+This function takes as input a HashSet of assigned shifts, then returns
 the total value of this schedule.
  *
  * @param assignedShifts Assigned shifts so far.
@@ -22,7 +22,7 @@ int computeValue(HashSet<Shift> assignedShifts) {
 }
 
 /**
-This recursive function takes as input a HashSet of assigned shifts, then returns
+This function takes as input a HashSet of assigned shifts, then returns
 the total number of hours worked.
  *
  * @param assignedShifts Assigned shifts so far.
