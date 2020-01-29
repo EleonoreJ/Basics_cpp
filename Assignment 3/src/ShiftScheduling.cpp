@@ -102,6 +102,10 @@ in order to generate the maximum amount of value.
  */
 HashSet<Shift> highestValueScheduleFor(const HashSet<Shift>& shifts, int maxHours) {
 
+    if (maxHours < 0) {
+        error("maxHours argument should be nonnegative.");
+    }
+
     HashSet<Shift> assignedShifts = HashSet<Shift>();
     return computeAssignedShifts(shifts, assignedShifts, maxHours);
 
