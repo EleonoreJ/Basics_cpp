@@ -1,32 +1,77 @@
 #include "WhatAreYouDoing.h"
 #include "Testing/WhatAreYouDoingTests.h"
 #include "strlib.h"
+#include <ctype.h>
 using namespace std;
 
-/* TODO: Read the comments in WhatAreYouDoing.h to see what this function needs to do, then
- * delete this comment.
- *
- * Don't forget about the tokenize function defined in WhatAreYouDoing.h; you'll almost
- * certainly want to use it.
- */
+void EmphaseRec(Vector<string> vec_init, Vector<string> vec_final, HashSet<string>& set){
+    /* Input: vec_init(remaining elements) and vec_final(chosen elements), set of sentences completed
+     * Output: Nothing
+     * Goal: Fulfill the hashset set with all the possibilities of WhatAreYouDoing */
+
+    /* Base case: no more remaining elements */
+    if (vec_init.size() == 0){
+
+        /* we transform the vector into a string and add it to the set */
+        string phrase;
+        for (string item: vec_final){
+            phrase = phrase + item;
+        }
+        set.add(phrase);
+    }
+
+    else{
+        string s = vec_init[0];
+
+        /* If it a the first elem of the word is a letter */
+        if (isalpha(s[0])){
+            vec_init = vec_init.subList(1);
+
+            /* New branch with the word in uppercase */
+            Vector<string> vec1 = vec_final;
+            vec1.add(toUpperCase(s));
+            EmphaseRec(vec_init,vec1,set);
+
+            /* New branch with the word in lowercase */
+            Vector<string> vec2 = vec_final;
+            vec2.add(toLowerCase(s));
+            EmphaseRec(vec_init,vec2,set);
+        }
+
+        /* if it is not a word, move on*/
+        else{
+            vec_final.add(s);
+            vec_init = vec_init.subList(1);
+            EmphaseRec(vec_init,vec_final,set);
+        }
+    }
+}
+
+
 HashSet<string> allEmphasesOf(const string& sentence) {
-    /* TODO: Delete this line and the next one, then implement this function. */
-    (void) sentence;
-    return {};
+    /* Input: the sentence to transform
+     * Output: set with all the possibilities of WhatAreYouDoing
+     * Goal: calling the recursive function EmphaseRec */
+
+    Vector<string> vec_init = tokenize(sentence);
+    Vector<string> vec_final;
+    HashSet<string> set;
+    EmphaseRec(vec_init, vec_final, set);
+    return set;
 }
 
 
 
 /* * * * * * Test Cases * * * * * */
 
-/* TODO: Add your own tests here. You know the drill - look for edge cases, think about
- * very small and very large cases, etc.
- */
 
+ADD_TEST("Provided Test: very long sentence") {
+    EXPECT(allEmphasesOf("Hello, our names are Robin and Eleonore").size()>50);
+}
 
-
-
-
+ADD_TEST("Provided Test: very short sentence") {
+    EXPECT_EQUAL(allEmphasesOf("A").size(), 2);
+}
 
 
 

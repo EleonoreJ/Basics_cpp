@@ -1,36 +1,98 @@
 #include "HumanPyramids.h"
 #include "Testing/HumanPyramidTests.h"
+#include "hashmap.h"
+#include <iostream>
+#include <vector>
+
 using namespace std;
 
-/* TODO: Refer to HumanPyramids.h for more information about what this function should do.
- * Then, delete this comment.
- */
-double weightOnBackOf(int row, int col, int pyramidHeight) {
-    /* TODO: Delete the next few lines and implement this function. */
-    (void) row;
-    (void) col;
-    (void) pyramidHeight;
-    return 0;
+
+double weightRec(int row, int col, int pyramidHeight, HashMap<Vector<int>,double>& table) {
+    /* Input: the position the person of interest (row,column), the size of the pyramid, the table for memoization
+     * Output: the weight carried by the person
+     * Goal: calculate by recursion the weight supported by everybody in the pyramid.*/
+
+    Vector<int> vec = {row,col};
+
+    /* Base case: the highest person in the pyramid.*/
+    if (row == 0 && col == 0){
+        table[vec] = 0;
+        return 0 ;
+    }
+
+    /* avoiding impossible positions*/
+    if (row<0){
+        error("row non positive");
+    }
+    if (col<0){
+        error("column non positive");
+    }
+
+    /* avoid cases outside the pyramid*/
+    if (col > pyramidHeight){
+        error("cannot return this weight");
+    }
+    if (row > pyramidHeight){
+        error("cannot return this weight");
+    }
+
+    /* Memoization use*/
+    if (table.containsKey(vec)){
+        return table[vec];
+    }
+
+    else{
+
+        /* weight for somebody on the right side*/
+        if (col > row-1){
+            table[vec] = weightRec(row-1,col-1,pyramidHeight-1, table)/2 + 80;
+            return weightRec(row-1,col-1,pyramidHeight-1, table)/2 + 80;
+        }
+
+        /* weight for somebody on the left side*/
+        if (col <= 0){
+            table[vec] = weightRec(row-1,col,pyramidHeight-1, table)/2 + 80;
+            return weightRec(row-1,col,pyramidHeight-1, table)/2 + 80;
+        }
+
+        /* weight calculation*/
+        else{
+            table[vec] = weightRec(row-1,col,pyramidHeight-1, table)/2 + weightRec(row-1,col-1,pyramidHeight-1, table)/2 + 160;
+            return weightRec(row-1,col,pyramidHeight-1, table)/2 + weightRec(row-1,col-1,pyramidHeight-1, table)/2 + 160;
+        }
+    }
 }
 
 
 
+double weightOnBackOf(int row, int col, int pyramidHeight) {
+    /* * Input: the position the person of interest (row,column), the size of the pyramid
+     * Output: the weight carried by the person
+     * Goal: add table for memoization*/
+    HashMap<Vector<int>,double> table;
+    return weightRec(row, col, pyramidHeight,table);
+}
 
 
 
 /* * * * * * Test Cases * * * * * */
 
-/* TODO: Add your own tests here. You know the drill - look for edge cases, think about
- * very small and very large cases, etc.
- */
 
 
+ADD_TEST("Provided Test: Check Person very high in the pyramid") {
+    /* Person E is located at row 1, column 0. */
+    EXPECT_EQUAL(weightOnBackOf(1, 0, 3), 80);
+}
 
 
+ADD_TEST("Provided Test: Check the highest person in the pyramid") {
+    /* Person E is located at row 1, column 0. */
+    EXPECT_EQUAL(weightOnBackOf(0, 0, 3), 0);
+}
 
-
-
-
+ADD_TEST("Provided Test: Function returns a value, even for someone deep in the pyramid but on the side.") {
+    EXPECT(weightOnBackOf(100, 100, 200) < 1000);
+}
 
 
 
@@ -61,6 +123,4 @@ ADD_TEST("Provided Test: Function returns a value, even for someone deep in the 
     EXPECT(weightOnBackOf(100, 50, 200) >= 10000);
 }
 
-/* TODO: Add your own tests here. You know the drill - look for edge cases, think about
- * very small and very large cases, etc.
- */
+
