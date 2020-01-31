@@ -1,3 +1,6 @@
+/* In this program, we evaluate the weight carried by people in a human pyramid using recursive functions */
+
+
 #include "HumanPyramids.h"
 #include "Testing/HumanPyramidTests.h"
 #include "hashmap.h"
