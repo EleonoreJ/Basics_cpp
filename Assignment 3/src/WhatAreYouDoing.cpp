@@ -1,8 +1,12 @@
+/* In this program, we find all the ways of capitalizing the words in a sentence using recursion. */
 #include "WhatAreYouDoing.h"
 #include "Testing/WhatAreYouDoingTests.h"
 #include "strlib.h"
 #include <ctype.h>
+
 using namespace std;
+
+
 
 void EmphaseRec(Vector<string> vec_init, Vector<string> vec_final, HashSet<string>& set){
     /* Input: vec_init(remaining elements) and vec_final(chosen elements), set of sentences completed
@@ -48,6 +52,7 @@ void EmphaseRec(Vector<string> vec_init, Vector<string> vec_final, HashSet<strin
 }
 
 
+
 HashSet<string> allEmphasesOf(const string& sentence) {
     /* Input: the sentence to transform
      * Output: set with all the possibilities of WhatAreYouDoing
@@ -64,22 +69,13 @@ HashSet<string> allEmphasesOf(const string& sentence) {
 
 /* * * * * * Test Cases * * * * * */
 
-
-ADD_TEST("Provided Test: very long sentence") {
+ADD_TEST("Very long sentence") {
     EXPECT(allEmphasesOf("Hello, our names are Robin and Eleonore").size()>50);
 }
 
-ADD_TEST("Provided Test: very short sentence") {
+ADD_TEST("Very short sentence") {
     EXPECT_EQUAL(allEmphasesOf("A").size(), 2);
 }
-
-
-
-
-
-
-
-
 
 /* * * * * * Test cases from the starter files below this point. * * * * * */
 

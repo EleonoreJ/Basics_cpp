@@ -1,6 +1,4 @@
-/* In this program, we evaluate the weight carried by people in a human pyramid using recursive functions */
-
-
+/* In this program, we evaluate the weight carried by people in a human pyramid using recursive functions. */
 #include "HumanPyramids.h"
 #include "Testing/HumanPyramidTests.h"
 #include "hashmap.h"
@@ -8,6 +6,7 @@
 #include <vector>
 
 using namespace std;
+
 
 
 double weightRec(int row, int col, int pyramidHeight, HashMap<Vector<int>,double>& table) {
@@ -69,7 +68,7 @@ double weightRec(int row, int col, int pyramidHeight, HashMap<Vector<int>,double
 
 
 double weightOnBackOf(int row, int col, int pyramidHeight) {
-    /* * Input: the position the person of interest (row,column), the size of the pyramid
+    /* Input: the position the person of interest (row,column), the size of the pyramid
      * Output: the weight carried by the person
      * Goal: add table for memoization*/
     HashMap<Vector<int>,double> table;
@@ -80,27 +79,20 @@ double weightOnBackOf(int row, int col, int pyramidHeight) {
 
 /* * * * * * Test Cases * * * * * */
 
-
-
-ADD_TEST("Provided Test: Check Person very high in the pyramid") {
+ADD_TEST("Check Person very high in the pyramid") {
     /* Person E is located at row 1, column 0. */
     EXPECT_EQUAL(weightOnBackOf(1, 0, 3), 80);
 }
 
 
-ADD_TEST("Provided Test: Check the highest person in the pyramid") {
+ADD_TEST("Check the highest person in the pyramid") {
     /* Person E is located at row 1, column 0. */
     EXPECT_EQUAL(weightOnBackOf(0, 0, 3), 0);
 }
 
-ADD_TEST("Provided Test: Function returns a value, even for someone deep in the pyramid but on the side.") {
+ADD_TEST("Function returns a value, even for someone deep in the pyramid but on the side.") {
     EXPECT(weightOnBackOf(100, 100, 200) < 1000);
 }
-
-
-
-
-
 
 /* * * * * * Test cases from the starter files below this point. * * * * * */
 
@@ -125,5 +117,3 @@ ADD_TEST("Provided Test: Function returns a value, even for someone deep in the 
      */
     EXPECT(weightOnBackOf(100, 50, 200) >= 10000);
 }
-
-

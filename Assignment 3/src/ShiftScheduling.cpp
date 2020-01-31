@@ -1,7 +1,9 @@
+/* In this program, we do shift scheduling using recursion. */
 #include "ShiftScheduling.h"
 #include "Testing/ShiftSchedulingTests.h"
 #include "vector.h"
 #include "error.h"
+
 using namespace std;
 
 
@@ -21,6 +23,8 @@ int computeValue(HashSet<Shift> assignedShifts) {
     return val;
 }
 
+
+
 /**
 This function takes as input a HashSet of assigned shifts, then returns
 the total number of hours worked.
@@ -35,6 +39,8 @@ int computeHours(HashSet<Shift> assignedShifts) {
     }
     return hours;
 }
+
+
 
 /**
 This function takes as input a HashSet of assigned shifts and a candidate shift, then returns
@@ -52,6 +58,8 @@ bool overlaps(HashSet<Shift> assignedShifts, Shift candidateShift) {
     }
     return false;
 }
+
+
 
 /**
 This recursive function takes as input a HashSet of possible shifts, a HashSet of assigned shifts,
@@ -90,6 +98,8 @@ HashSet<Shift> computeAssignedShifts(HashSet<Shift> shifts,
     }
 }
 
+
+
 /**
 This function takes as input a HashSet of all the possible shifts, along with the maximum number
 of hours the employee is allowed to work for, then returns which shifts the employee should take
@@ -101,7 +111,6 @@ in order to generate the maximum amount of value.
  *         have overlapping shifts, nor can it exceed the maximum number of hours.
  */
 HashSet<Shift> highestValueScheduleFor(const HashSet<Shift>& shifts, int maxHours) {
-
     if (maxHours < 0) {
         error("maxHours argument should be nonnegative.");
     }

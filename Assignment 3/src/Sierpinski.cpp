@@ -1,5 +1,7 @@
+/* In this program, we draw Sierpinski triangles using recursion. */
 #include "Sierpinski.h"
 #include "error.h"
+
 using namespace std;
 
 
@@ -22,6 +24,15 @@ void drawTriangle(GWindow& window,
     window.fillPolygon({ x0, y0, x1, y1, x2, y2 });
 }
 
+
+
+/**
+ * Computes midpoint of two points.
+ *
+ * @param x0 y0 Coordinates of first point.
+ * @param x1 y1 Coordinates of second point.
+ * @return Coordinates of midpoint.
+ */
 Vector<double> computeMidpoint(double x0, double y0,
                                double x1, double y1) {
     double newX = (x0+x1)/2;
@@ -29,17 +40,14 @@ Vector<double> computeMidpoint(double x0, double y0,
     return {newX, newY};
 }
 
+
+
 /**
  * Draws a Sierpinski triangle with the specified corners.
  *
  * An order-0 Sierpinski triangle is just a regular filled triangle. An order-n Sierpinski
  * triangle, for n > 0, consists of three smaller Sierpinski triangles of order n-1, each half
  * as wide and as tall as the original triangle, positioned so that they meet corner-to-corner.
- *
- * The order of the provided points is irrelevant.
- *
- * If the order provided to this function is negative, this function should call error() to report
- * an error.
  *
  * @param window The window in which to draw the triangle.
  * @param x0, y0 The x and y coordinates of the first corner of the triangle.
@@ -52,7 +60,6 @@ void drawSierpinskiTriangle(GWindow& window,
                             double x1, double y1,
                             double x2, double y2,
                             int order) {
-
 
     if (order < 0) {
         error("Order should be nonnegative.");
