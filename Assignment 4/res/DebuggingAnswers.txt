@@ -1,27 +1,30 @@
 Put the answers to the debugging questions from Problem One in this file.
 
-Q1:
+Q1: numDisks = 5, start = 'A', finish = 'C', temp = 'B'
 
 
 
-Q2:
+Q2: File: src/Demos/TowewrsOfHanoiGUI.cpp in the function: makeTheMagicHappen
 
 
 
-Q3:
+Q3: Number of total moves = 31
 
 
 
-Q4:
+Q4: Number of total moves after the first recursion call = 15
 
 
 
-Q5:
+Q5: String with two characters
 
 
 
-Q6:
+Q6: chosen += ch should be replaced by chosen + ch
 
 
 
-Q7:
+Q7: chosen is empty at the beginning of the 'for loop' and characters should added to its value. 
+By writing chosen += ch, you change the initial value of chosen. Therefore, when the value associated with is not empty anymore.  
+
+
