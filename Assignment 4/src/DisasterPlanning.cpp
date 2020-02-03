@@ -2,16 +2,79 @@
 #include "Testing/DisasterPlanningTests.h"
 using namespace std;
 
-/* TODO: Refer to DisasterPlanning.h for more information about this function.
- * Then, delete this comment.
- */
+bool isCovered(const string& city,
+               const HashMap<string, HashSet<string>>& roadNetwork,
+               const HashSet<string>& supplyLocations);
+
+bool DisasterReadyRec(const HashMap<string, HashSet<string>>& roadNetwork, int numCities, HashSet<string>& supplyLocations, HashSet<string>& cities, HashSet<string>& supplyLoc_final){
+
+    if (numCities<0){
+        error("the number of cities is negative");
+    }
+
+    if (cities.size()==0){
+        supplyLoc_final = supplyLocations;
+        return true;
+    }
+
+    if (numCities == 0){
+        for (string city: cities){
+            if (!isCovered(city, roadNetwork, supplyLocations)){
+                return false;
+            }
+        }
+        supplyLoc_final = supplyLocations;
+        return true;
+    }
+
+
+    else{
+        string city = cities.front();
+        if (isCovered(city, roadNetwork, supplyLocations)){
+            cities.remove(city);
+            if (DisasterReadyRec(roadNetwork, numCities, supplyLocations, cities, supplyLoc_final)){
+                return true;
+            }
+        }
+
+        else{
+            HashSet<string> supplyLoc0 = supplyLocations;
+            supplyLoc0.add(city);
+            HashSet<string> cities0 = cities;
+            cities0.remove(city);
+            if (DisasterReadyRec(roadNetwork, numCities-1, supplyLoc0, cities0, supplyLoc_final)){
+                return true;
+            }
+
+            for (string neighbor: roadNetwork[city]) {
+                HashSet<string> supplyLoc1 = supplyLocations;
+                supplyLoc1.add(neighbor);
+                HashSet<string> cities1 = cities;
+                cities1.remove(neighbor);
+                if (DisasterReadyRec(roadNetwork, numCities-1, supplyLoc1, cities1, supplyLoc_final)){
+                    return true;
+                }
+             }
+        }
+
+    }
+    return false;
+}
+
+
 bool canBeMadeDisasterReady(const HashMap<string, HashSet<string>>& roadNetwork,
                             int numCities,
                             HashSet<string>& supplyLocations) {
-    /* TODO: Delete the next few lines and implement this function. */
-    (void) roadNetwork;
-    (void) numCities;
-    (void) supplyLocations;
+    HashSet<string> cities;
+    for (string city: roadNetwork){
+        cities.add(city);
+    }
+
+    HashSet<string> supplyLoc_final;
+    if (DisasterReadyRec(roadNetwork, numCities, supplyLocations, cities, supplyLoc_final)){
+        supplyLocations = supplyLoc_final;
+        return true;
+    }
     return false;
 }
 
@@ -61,6 +124,31 @@ bool isCovered(const string& city,
 
 
 
+ADD_TEST("Provided Test: Stress test output. (This should take at most a few seconds.)") {
+    HashMap<string, HashSet<string>> grid;
+
+    /* Build the grid. */
+    char maxRow = 'F';
+    int  maxCol = 6;
+    for (char row = 'A'; row <= maxRow; row++) {
+        for (int col = 1; col <= maxCol; col++) {
+            if (row != maxRow) {
+                grid[row + to_string(col)] += (char(row + 1) + to_string(col));
+            }
+            if (col != maxCol) {
+                grid[row + to_string(col)] += (char(row) + to_string(col + 1));
+            }
+        }
+    }
+    grid = makeSymmetric(grid);
+
+    HashSet<string> locations;
+    EXPECT(canBeMadeDisasterReady(grid, 10, locations));
+
+    for (int col = 1; col <= maxCol; col++) {
+            EXPECT(isCovered('D' + to_string(col), grid, locations));
+    }
+}
 
 
 
@@ -81,8 +169,8 @@ ADD_TEST("Provided Test: Reports an error if numCities < 0") {
 
 ADD_TEST("Provided Test: Works for map with one city.") {
     HashMap<string, HashSet<string>> map = makeSymmetric({
-         { "Solipsist", {} }
-    });
+                                                             { "Solipsist", {} }
+                                                         });
 
     HashSet<string> locations0, locations1, locations2;
     EXPECT(!canBeMadeDisasterReady(map, 0, locations0));
@@ -92,8 +180,8 @@ ADD_TEST("Provided Test: Works for map with one city.") {
 
 ADD_TEST("Provided Test: Works for map with one city, and produces output.") {
     HashMap<string, HashSet<string>> map = makeSymmetric({
-         { "Solipsist", {} }
-    });
+                                                             { "Solipsist", {} }
+                                                         });
 
     HashSet<string> locations0, locations1, locations2;
     EXPECT(!canBeMadeDisasterReady(map, 0, locations0));
@@ -110,9 +198,9 @@ ADD_TEST("Provided Test: Works for map with one city, and produces output.") {
 
 ADD_TEST("Provided Test: Works for map with two linked cities.") {
     HashMap<string, HashSet<string>> map = makeSymmetric({
-         { "A", { "B" } },
-         { "B", {     } }
-    });
+                                                             { "A", { "B" } },
+                                                             { "B", {     } }
+                                                         });
 
     HashSet<string> locations0, locations1, locations2;
     EXPECT(!canBeMadeDisasterReady(map, 0, locations0));
@@ -122,8 +210,8 @@ ADD_TEST("Provided Test: Works for map with two linked cities.") {
 
 ADD_TEST("Provided Test: Works for map with two linked cities, and produces output.") {
     HashMap<string, HashSet<string>> map = makeSymmetric({
-         { "A", { "B" } },
-    });
+                                                             { "A", { "B" } },
+                                                         });
 
     HashSet<string> locations0, locations1, locations2;
     EXPECT(!canBeMadeDisasterReady(map, 0, locations0));
@@ -139,10 +227,10 @@ ADD_TEST("Provided Test: Works for map with two linked cities, and produces outp
 
 ADD_TEST("Provided Test: Works for four cities in a line.") {
     HashMap<string, HashSet<string>> map = makeSymmetric({
-         { "A", { "B" } },
-         { "B", { "C" } },
-         { "C", { "D" } }
-    });
+                                                             { "A", { "B" } },
+                                                             { "B", { "C" } },
+                                                             { "C", { "D" } }
+                                                         });
 
     HashSet<string> locations0, locations1, locations2, locations3, locations4;
     EXPECT(!canBeMadeDisasterReady(map, 0, locations0));
@@ -154,10 +242,10 @@ ADD_TEST("Provided Test: Works for four cities in a line.") {
 
 ADD_TEST("Provided Test: Works for four cities in a line, and produces output.") {
     HashMap<string, HashSet<string>> map = makeSymmetric({
-         { "A", { "B" } },
-         { "B", { "C" } },
-         { "C", { "D" } }
-    });
+                                                             { "A", { "B" } },
+                                                             { "B", { "C" } },
+                                                             { "C", { "D" } }
+                                                         });
 
     HashSet<string> locations0, locations1, locations2, locations3, locations4;
     EXPECT(!canBeMadeDisasterReady(map, 0, locations0));
@@ -182,11 +270,11 @@ ADD_TEST("Provided Test: Works for four cities in a line, and produces output.")
 
 ADD_TEST("Provided Test: Works for four disconnected cities.") {
     HashMap<string, HashSet<string>> map = makeSymmetric({
-        { "A", { } },
-        { "B", { } },
-        { "C", { } },
-        { "D", { } }
-    });
+                                                             { "A", { } },
+                                                             { "B", { } },
+                                                             { "C", { } },
+                                                             { "D", { } }
+                                                         });
 
     HashSet<string> locations0, locations1, locations2, locations3, locations4;
     EXPECT(!canBeMadeDisasterReady(map, 0, locations0));
@@ -198,11 +286,11 @@ ADD_TEST("Provided Test: Works for four disconnected cities.") {
 
 ADD_TEST("Provided Test: Works for four disconnected cities, and produces output.") {
     HashMap<string, HashSet<string>> map = makeSymmetric({
-        { "A", { } },
-        { "B", { } },
-        { "C", { } },
-        { "D", { } }
-    });
+                                                             { "A", { } },
+                                                             { "B", { } },
+                                                             { "C", { } },
+                                                             { "D", { } }
+                                                         });
 
     HashSet<string> locations0, locations1, locations2, locations3, locations4;
     EXPECT(!canBeMadeDisasterReady(map, 0, locations0));
@@ -218,15 +306,15 @@ ADD_TEST("Provided Test: Works for four disconnected cities, and produces output
 ADD_TEST("Provided Test: Works on a 3x3 grid.") {
     /* Make a 3x3 grid of cities. */
     HashMap<string, HashSet<string>> map = makeSymmetric({
-        { "A1", { "A2", "B1" } },
-        { "A2", { "A3", "B2" } },
-        { "A3", { "B3"       } },
-        { "B1", { "B2", "C1" } },
-        { "B2", { "B3", "C2" } },
-        { "B3", { "C3"       } },
-        { "C1", { "C2" } },
-        { "C2", { "C3" } },
-    });
+                                                             { "A1", { "A2", "B1" } },
+                                                             { "A2", { "A3", "B2" } },
+                                                             { "A3", { "B3"       } },
+                                                             { "B1", { "B2", "C1" } },
+                                                             { "B2", { "B3", "C2" } },
+                                                             { "B3", { "C3"       } },
+                                                             { "C1", { "C2" } },
+                                                             { "C2", { "C3" } },
+                                                         });
 
     HashSet<string> locations0, locations1, locations2, locations3;
     EXPECT(!canBeMadeDisasterReady(map, 0, locations0));
@@ -238,15 +326,15 @@ ADD_TEST("Provided Test: Works on a 3x3 grid.") {
 ADD_TEST("Provided Test: Works on a 3x3 grid, and produces output.") {
     /* Make a 3x3 grid of cities. */
     HashMap<string, HashSet<string>> map = makeSymmetric({
-        { "A1", { "A2", "B1" } },
-        { "A2", { "A3", "B2" } },
-        { "A3", { "B3"       } },
-        { "B1", { "B2", "C1" } },
-        { "B2", { "B3", "C2" } },
-        { "B3", { "C3"       } },
-        { "C1", { "C2" } },
-        { "C2", { "C3" } },
-    });
+                                                             { "A1", { "A2", "B1" } },
+                                                             { "A2", { "A3", "B2" } },
+                                                             { "A3", { "B3"       } },
+                                                             { "B1", { "B2", "C1" } },
+                                                             { "B2", { "B3", "C2" } },
+                                                             { "B3", { "C3"       } },
+                                                             { "C1", { "C2" } },
+                                                             { "C2", { "C3" } },
+                                                         });
 
     HashSet<string> locations0, locations1, locations2, locations3;
     EXPECT(!canBeMadeDisasterReady(map, 0, locations0));
@@ -268,9 +356,9 @@ ADD_TEST("Provided Test: Works on a 3x3 grid, and produces output.") {
 
 ADD_TEST("Provided Test: Can solve ethane example with two cities.") {
     HashMap<string, HashSet<string>> map = makeSymmetric({
-        { "C1", {"H1", "H3", "H5", "C2"} },
-        { "C2", {"H2", "H4", "H6"} },
-    });
+                                                             { "C1", {"H1", "H3", "H5", "C2"} },
+                                                             { "C2", {"H2", "H4", "H6"} },
+                                                         });
 
     HashSet<string> locations;
     EXPECT(canBeMadeDisasterReady(map, 2, locations));
@@ -278,9 +366,9 @@ ADD_TEST("Provided Test: Can solve ethane example with two cities.") {
 
 ADD_TEST("Provided Test: Can solve ethane example with two cities, and produces output.") {
     HashMap<string, HashSet<string>> map = makeSymmetric({
-        { "C1", {"H1", "H3", "H5", "C2"} },
-        { "C2", {"H2", "H4", "H6"} },
-    });
+                                                             { "C1", {"H1", "H3", "H5", "C2"} },
+                                                             { "C2", {"H2", "H4", "H6"} },
+                                                         });
 
     HashSet<string> locations;
     EXPECT(canBeMadeDisasterReady(map, 2, locations));
@@ -291,13 +379,13 @@ ADD_TEST("Provided Test: Can solve ethane example with two cities, and produces 
 
 ADD_TEST("Provided Test: Solves \"Don't be Greedy\" from the handout.") {
     HashMap<string, HashSet<string>> map = makeSymmetric({
-        { "A", { "B" } },
-        { "B", { "C", "D" } },
-        { "C", { "D" } },
-        { "D", { "E", "F" } },
-        { "E", { "F" } },
-        { "F", { "G" } },
-    });
+                                                             { "A", { "B" } },
+                                                             { "B", { "C", "D" } },
+                                                             { "C", { "D" } },
+                                                             { "D", { "E", "F" } },
+                                                             { "E", { "F" } },
+                                                             { "F", { "G" } },
+                                                         });
 
     HashSet<string> locations0, locations1, locations2;
     EXPECT(!canBeMadeDisasterReady(map, 0, locations0));
@@ -307,13 +395,13 @@ ADD_TEST("Provided Test: Solves \"Don't be Greedy\" from the handout.") {
 
 ADD_TEST("Provided Test: Solves \"Don't be Greedy\" from the handout, and produces output.") {
     HashMap<string, HashSet<string>> map = makeSymmetric({
-        { "A", { "B" } },
-        { "B", { "C", "D" } },
-        { "C", { "D" } },
-        { "D", { "G", "F" } },
-        { "E", { "F" } },
-        { "F", { "G" } },
-    });
+                                                             { "A", { "B" } },
+                                                             { "B", { "C", "D" } },
+                                                             { "C", { "D" } },
+                                                             { "D", { "G", "F" } },
+                                                             { "E", { "F" } },
+                                                             { "F", { "G" } },
+                                                         });
 
     HashSet<string> locations0, locations1, locations2;
     EXPECT(!canBeMadeDisasterReady(map, 0, locations0));
@@ -345,6 +433,8 @@ ADD_TEST("Provided Test: Stress test: 6 x 6 grid. (This should take at most a fe
     HashSet<string> locations;
     EXPECT(canBeMadeDisasterReady(grid, 10, locations));
 }
+
+
 
 ADD_TEST("Provided Test: Stress test output. (This should take at most a few seconds.)") {
     HashMap<string, HashSet<string>> grid;
