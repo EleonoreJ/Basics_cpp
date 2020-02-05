@@ -1,3 +1,6 @@
+/* This program determines if a city network is covered in case of emergency with a limited number of city covered.
+ * It determines the appropriate locations of emergency ressources.*/
+
 #include "DisasterPlanning.h"
 #include "Testing/DisasterPlanningTests.h"
 using namespace std;
@@ -5,19 +8,27 @@ using namespace std;
 bool isCovered(const string& city,
                const HashMap<string, HashSet<string>>& roadNetwork,
                const HashSet<string>& supplyLocations);
+/* function which returns if a specific city is covered*/
 
 bool DisasterReadyRec(const HashMap<string, HashSet<string>>& roadNetwork, int numCities, HashSet<string>& supplyLocations, HashSet<string>& cities, HashSet<string>& supplyLoc_final){
+    /* Input: the road network, the number of cities which can be covered, the location of the resources, the cities not covered yet, the final location of the resources
+     * Output: boolean to say if the network can be covered
+     * Goal: Determine if a network can be covered */
 
+    /* Impossible case*/
     if (numCities<0){
         error("the number of cities is negative");
     }
 
+    /* base case, if all cities are covered*/
     if (cities.size()==0){
         supplyLoc_final = supplyLocations;
         return true;
     }
 
+    /* base case, if we cannot add emergency supply in another city*/
     if (numCities == 0){
+        /* We test if the remaining cities are covered*/
         for (string city: cities){
             if (!isCovered(city, roadNetwork, supplyLocations)){
                 return false;
@@ -29,6 +40,8 @@ bool DisasterReadyRec(const HashMap<string, HashSet<string>>& roadNetwork, int n
 
 
     else{
+
+        /* pick a city and test if it is covered, if so we remove it from the set*/
         string city = cities.front();
         if (isCovered(city, roadNetwork, supplyLocations)){
             cities.remove(city);
@@ -38,6 +51,8 @@ bool DisasterReadyRec(const HashMap<string, HashSet<string>>& roadNetwork, int n
         }
 
         else{
+
+            /* if the city is not covered, we try to cover it*/
             HashSet<string> supplyLoc0 = supplyLocations;
             supplyLoc0.add(city);
             HashSet<string> cities0 = cities;
@@ -46,6 +61,7 @@ bool DisasterReadyRec(const HashMap<string, HashSet<string>>& roadNetwork, int n
                 return true;
             }
 
+            /* Or to cover one of its neighbors*/
             for (string neighbor: roadNetwork[city]) {
                 HashSet<string> supplyLoc1 = supplyLocations;
                 supplyLoc1.add(neighbor);
@@ -65,6 +81,12 @@ bool DisasterReadyRec(const HashMap<string, HashSet<string>>& roadNetwork, int n
 bool canBeMadeDisasterReady(const HashMap<string, HashSet<string>>& roadNetwork,
                             int numCities,
                             HashSet<string>& supplyLocations) {
+    /* Input: the road network, the number of cities which can be covered, the location of the emergency resources
+     * Output: boolean to determine if the network can be covered
+     * Goal: call DisasterReadyRec recursive function
+     */
+
+
     HashSet<string> cities;
     for (string city: roadNetwork){
         cities.add(city);
@@ -120,37 +142,15 @@ bool isCovered(const string& city,
 
 /* * * * * * Test Cases Below This Point * * * * * */
 
-/* TODO: Add your own custom tests here! */
 
+ADD_TEST("Provided Test:small network") {
+    HashMap<string, HashSet<string>> map = {{ "A", { "B" } },{"B",{"A","C"}},{"C", {"B"}}};
 
+    HashSet<string> locations0, locations1;
+    EXPECT(!canBeMadeDisasterReady(map, 0, locations0));
+    EXPECT(canBeMadeDisasterReady(map, 1, locations1));
 
-ADD_TEST("Provided Test: Stress test output. (This should take at most a few seconds.)") {
-    HashMap<string, HashSet<string>> grid;
-
-    /* Build the grid. */
-    char maxRow = 'F';
-    int  maxCol = 6;
-    for (char row = 'A'; row <= maxRow; row++) {
-        for (int col = 1; col <= maxCol; col++) {
-            if (row != maxRow) {
-                grid[row + to_string(col)] += (char(row + 1) + to_string(col));
-            }
-            if (col != maxCol) {
-                grid[row + to_string(col)] += (char(row) + to_string(col + 1));
-            }
-        }
-    }
-    grid = makeSymmetric(grid);
-
-    HashSet<string> locations;
-    EXPECT(canBeMadeDisasterReady(grid, 10, locations));
-
-    for (int col = 1; col <= maxCol; col++) {
-            EXPECT(isCovered('D' + to_string(col), grid, locations));
-    }
 }
-
-
 
 
 
