@@ -1,3 +1,5 @@
+/* Given a list of patients and doctors, this program determines whether it is possible to schedule everyone. */
+
 #include "DoctorsWithoutOrders.h"
 #include "Testing/DoctorsWithoutOrdersTests.h"
 using namespace std;
@@ -7,11 +9,17 @@ using namespace std;
 bool canAllPatientsBeSeen(const HashMap<string, int>& doctors,
                           const HashMap<string, int>& patients,
                           HashMap<string, HashSet<string>>& schedule) {
+    /* Input: a group of doctors, a group of patients, a schedule (list of patients) of each doctor
+     * Output: boolean saying whether it's possible to schedule all the patients so that each one is
+     * seen by a doctor for the appropriate amount of time.
+     * Goal: Determine wheter it's possible to assign all the patients to the doctors. */
 
+    /* Base case */
     if (patients.isEmpty()) {
         return true;
     }
 
+    /* Recursive case */
     else {
         string p = patients.front();
         int hoursNeeded = patients[p];
@@ -43,24 +51,30 @@ bool canAllPatientsBeSeen(const HashMap<string, int>& doctors,
 
 
 
-
-
 /* * * * * * Test Cases Below This Point * * * * * */
 
-/* TODO: Add your own custom tests here! */
+ADD_TEST("Impossible example") {
+    HashMap<string, HashSet<string>> schedule;
 
+    HashMap<string, int> doctors = {
+        { "Doctor Thomas", 10 },
+        { "Doctor Taussig", 8 },
+        { "Doctor Sacks",   8 },
+        { "Doctor Ofri",    8 }
+    };
+    HashMap<string, int> patients = {
+        { "Patient Lacks", 3 },
+        { "Patient Gage", 3 },
+        { "Patient Molaison", 4 },
+        { "Patient Writebol", 3 },
+        { "Patient St. Martin", 1 },
+        { "Patient Washkansky", 6 },
+        { "Patient Sandoval", 8 },
+        { "Patient Giese", 6 },
+    };
 
-
-
-
-
-
-
-
-
-
-
-
+    EXPECT(!canAllPatientsBeSeen(doctors, patients, schedule));
+}
 
 /* * * * * Provided Tests Below This Point * * * * */
 

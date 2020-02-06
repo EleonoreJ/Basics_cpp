@@ -16,15 +16,17 @@ Q4: Number of total moves after the first recursion call = 15
 
 
 
-Q5: String with two characters
+Q5: String with two characters (ex: "ab")
 
 
 
-Q6: chosen += ch should be replaced by chosen + ch
+Q6: At line 41, in the recursive call, chosen += ch should be replaced by chosen + ch
 
 
 
-Q7: chosen is empty at the beginning of the 'for loop' and characters should added to its value. 
-By writing chosen += ch, you change the initial value of chosen. Therefore, when the value associated with is not empty anymore.  
+Q7: Feeding "ab", the output of the bugged function is "aba". Fixing the bug, we have instead
+the correct permutation "ba". This is because the += operation changes the value of the variable
+'chosen' for the next iteration. In the next recursive call, we end up adding ch='a' to chosen="ab".
+
 
 
