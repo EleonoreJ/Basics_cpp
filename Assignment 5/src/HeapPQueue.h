@@ -82,9 +82,11 @@ public:
     void printDebugInfo();
 
 private:
-    /* TODO: Add whatever fields, types, and helper functions that you'd like! */
+    DataPoint* elems;         // The actual array of elements.
+    int  allocatedSize; // How much space is allocated in our HeapPQueue.
+    int  logicalSize;   // How many elements are logically in the HeapPQueue.
 
-
+    void grow();
 
 
     /* Weird C++isms: C++ loves to make copies of things, which is usually a good thing but

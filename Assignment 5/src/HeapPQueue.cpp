@@ -3,50 +3,126 @@
 #include "vector.h"
 using namespace std;
 
+
+/* Constant controlling the default size of our HeapPQueue. */
+const int kInitialSize = 4;
+
+/* Constructor initializes the fields of the HeapPQueue to
+ * appropriate defaults.
+ */
 HeapPQueue::HeapPQueue() {
-    /* TODO: Implement this. */
+    logicalSize = 0;
+    allocatedSize = kInitialSize;
+    elems = new DataPoint[allocatedSize];
 }
 
+/* Destructor cleans up memory allocated by the HeapPQueue. */
 HeapPQueue::~HeapPQueue() {
-    /* TODO: Implement this. */
+    delete[] elems;
 }
 
 void HeapPQueue::enqueue(const DataPoint& data) {
-    /* TODO: Delete the next line and implement this. */
-    (void) data;
+    if (allocatedSize == logicalSize) {
+        grow();
+    }
+
+    elems[logicalSize] = data;
+    logicalSize ++;
+
+    // Bubble-up
+    int currIndex = logicalSize - 1;
+    while (currIndex != 0) {
+        int pIndex = (currIndex - 1)/2;
+
+        if (elems[currIndex].weight < elems[pIndex].weight) {
+            DataPoint tmp = elems[pIndex];
+            elems[pIndex] = elems[currIndex];
+            elems[currIndex] = tmp;
+        }
+        currIndex = pIndex;
+    }
 }
 
 int HeapPQueue::size() const {
-    /* TODO: Delete the next line and implement this. */
-    return 0;
+    return logicalSize;
 }
 
 DataPoint HeapPQueue::peek() const {
-    /* TODO: Delete the next line and implement this. */
-    return {};
+    if (isEmpty()) {
+        error("What is the sound of one hand clapping?");
+    }
+
+    return elems[0];
 }
 
 DataPoint HeapPQueue::dequeue() {
-    /* TODO: Delete the next line and implement this. */
-    return {};
+    if (isEmpty()) {
+        error("What is the sound of one hand clapping?");
+    }
+
+    DataPoint first = elems[0];
+    elems[0] = elems[logicalSize-1];
+    logicalSize --;
+
+    // Bubble-down
+    int currIndex = 0;
+    while(true) {
+        int lChildIndex = 2*currIndex + 1;
+        int rChildIndex = 2*(currIndex + 1);
+        int minIndex = currIndex;
+
+        if (lChildIndex >= logicalSize) {
+            break;
+        }
+
+        if (elems[minIndex].weight > elems[lChildIndex].weight) {
+            minIndex = lChildIndex;
+        }
+
+        if (rChildIndex < logicalSize &&
+                elems[minIndex].weight > elems[rChildIndex].weight) {
+            minIndex = rChildIndex;
+        }
+
+        if (minIndex != currIndex) {
+            DataPoint tmp = elems[currIndex];
+            elems[currIndex] = elems[minIndex];
+            elems[minIndex] = tmp;
+            currIndex = minIndex;
+        }
+
+        else {
+            break;
+        }
+    }
+
+    return first;
 }
 
 bool HeapPQueue::isEmpty() const {
-    /* TODO: Delete the next line and implement this. */
-    return 0;
+    return size() == 0;
 }
 
 /* This function is purely for you to use during testing. You can have it do whatever
  * you'd like, including nothing. We won't call this function during grading, so feel
  * free to fill it with whatever is most useful to you!
- *
- * TODO: Delete this comment and replace it with one describing what this function
- * actually does.
  */
 void HeapPQueue::printDebugInfo() {
-    /* TODO: Delete this comment and (optionally) put debugging code here. */
+    /* . */
 }
 
+void HeapPQueue::grow() {
+    allocatedSize *= 2;
+
+    DataPoint* newElems = new DataPoint[allocatedSize];
+
+    for (int i = 0; i < logicalSize; i++) {
+        newElems[i] = elems[i];
+    }
+
+    delete[] elems;
+    elems = newElems;
+}
 
 
 
