@@ -3,14 +3,53 @@
 #include "HeapPQueue.h"
 using namespace std;
 
-/* TODO: Refer to TopK.h for more information about what this function does, then
- * delete this comment.
- */
+
 Vector<DataPoint> topK(istream& stream, int k) {
-    /* TODO: Delete the next few lines and implement this. */
-    (void) stream;
-    (void) k;
-    return {};
+    HeapPQueue pq;
+
+    for (DataPoint pt; stream >> pt; ) {
+        pq.enqueue(pt);
+    }
+
+    Vector<DataPoint> topKElements;
+
+    if (pq.size() == 0) {
+        return topKElements;
+    }
+
+    int max;
+    int min;
+    if (pq.size() > k) {
+        max = pq.size();
+        min = k;
+    }
+    else {
+        max = k;
+        min = pq.size();
+    }
+
+    for (int i = 0; i < max-min; i++) {
+        if (pq.size() == 1) {
+            break;
+        }
+        pq.dequeue();
+    }
+    for (int j = 0; j < min; j++) {
+        topKElements += pq.dequeue();
+    }
+
+    int start = 0;
+    int end = topKElements.size() - 1;
+    while (start < end)
+    {
+        DataPoint tmp = topKElements[start];
+        topKElements[start] = topKElements[end];
+        topKElements[end] = tmp;
+        start ++;
+        end --;
+    }
+
+    return topKElements;
 }
 
 
@@ -30,14 +69,6 @@ stringstream asStream(const Vector<DataPoint>& dataPoints) {
 }
 
 /* TODO: Add your own custom tests here! */
-
-
-
-
-
-
-
-
 
 
 
