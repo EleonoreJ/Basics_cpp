@@ -2,19 +2,55 @@
 #include "Testing/CombineTests.h"
 using namespace std;
 
-/* TODO: Refer to Combine.h for more information about what this function does,
- * then delete this comment.
- */
+Vector<DataPoint> merge(Vector<DataPoint>& left, Vector<DataPoint>& right){
+    Vector<DataPoint> v;
+    int l = 0;
+    int r = 0;
+    while(l<left.size() and r<right.size()){
+        if (left[l].weight <= right[r].weight){
+            v.add(left[l]);
+            l++;
+            continue;
+        }
+        if (right[r].weight < left[l].weight){
+            v.add(right[r]);
+            r++;
+        }
+    }
+
+    if (l == left.size()){
+        return v = v + right.subList(r);
+    }
+
+    else    {
+        return v = v + left.subList(l);
+    }
+}
+
+ Vector<DataPoint> mergesort(const Vector<Vector<DataPoint>>& v){
+    if (v.size() == 1){
+        return v[0];
+    }
+
+
+    int half = v.size()/2;
+    Vector<Vector<DataPoint>> left = v.subList(0,half);
+    Vector<Vector<DataPoint>> right = v.subList(half);
+
+    Vector<DataPoint> l = mergesort(left);
+    Vector<DataPoint> r = mergesort(right);
+    return merge(l,r);
+
+}
+
+
 Vector<DataPoint> combine(const Vector<Vector<DataPoint>>& sequences) {
-    /* TODO: Delete the next few lines and implement this. */
-    (void) sequences;
-    return {};
+    return mergesort(sequences);
 }
 
 /* * * * * * Test Cases Below This Point * * * * * */
 
 /* TODO: Add your own custom tests here! */
-
 
 
 
