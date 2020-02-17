@@ -42,9 +42,7 @@ void HeapPQueue::enqueue(const DataPoint& data) {
         int pIndex = (currIndex - 1)/2;
 
         if (elems[currIndex].weight < elems[pIndex].weight) {
-            DataPoint tmp = elems[pIndex];
-            elems[pIndex] = elems[currIndex];
-            elems[currIndex] = tmp;
+            swap(currIndex, pIndex);
         }
         currIndex = pIndex;
     }
@@ -105,9 +103,7 @@ DataPoint HeapPQueue::dequeue() {
         }
 
         if (minIndex != currIndex) {
-            DataPoint tmp = elems[currIndex];
-            elems[currIndex] = elems[minIndex];
-            elems[minIndex] = tmp;
+            swap(currIndex, minIndex);
             currIndex = minIndex;
         }
 
@@ -149,6 +145,14 @@ void HeapPQueue::grow() {
     elems = newElems;
 }
 
+/**
+ * Swaps two elements of the binary heap.
+ */
+void HeapPQueue::swap(int& i, int& j) {
+    DataPoint tmp = elems[i];
+    elems[i] = elems[j];
+    elems[j] = tmp;
+}
 
 
 /* * * * * * Test Cases Below This Point * * * * * */

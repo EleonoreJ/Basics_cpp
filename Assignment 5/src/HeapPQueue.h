@@ -92,6 +92,7 @@ private:
     int  logicalSize;   // How many elements are logically in the HeapPQueue.
 
     void grow();
+    void swap(int& i, int& j);
 
 
     /* Weird C++isms: C++ loves to make copies of things, which is usually a good thing but
