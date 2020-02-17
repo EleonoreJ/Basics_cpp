@@ -7,8 +7,8 @@ using namespace std;
 /* Constant controlling the default size of our HeapPQueue. */
 const int kInitialSize = 4;
 
-/* Constructor initializes the fields of the HeapPQueue to
- * appropriate defaults.
+/**
+ * Constructor. Creates a new, empty priority queue.
  */
 HeapPQueue::HeapPQueue() {
     logicalSize = 0;
@@ -16,11 +16,18 @@ HeapPQueue::HeapPQueue() {
     elems = new DataPoint[allocatedSize];
 }
 
-/* Destructor cleans up memory allocated by the HeapPQueue. */
+/**
+ * Destructor. Cleans up all memory allocated by this priority queue.
+ */
 HeapPQueue::~HeapPQueue() {
     delete[] elems;
 }
 
+/**
+ * Adds a new data point into the queue. This operation runs in time O(log n),
+ * where n is the number of elements in the queue.
+ * @param data The data point to add.
+ */
 void HeapPQueue::enqueue(const DataPoint& data) {
     if (allocatedSize == logicalSize) {
         grow();
@@ -43,10 +50,19 @@ void HeapPQueue::enqueue(const DataPoint& data) {
     }
 }
 
+/**
+ * Returns the number of data points in this priority queue.
+ * @return The number of elements in the priority queue.
+ */
 int HeapPQueue::size() const {
     return logicalSize;
 }
 
+/**
+ * Returns, but does not remove, the element that would next be removed via a call to
+ * dequeue.
+ * @return The lowest-weight data point in the queue.
+ */
 DataPoint HeapPQueue::peek() const {
     if (isEmpty()) {
         error("What is the sound of one hand clapping?");
@@ -55,6 +71,10 @@ DataPoint HeapPQueue::peek() const {
     return elems[0];
 }
 
+/**
+ * Removes and returns the lowest-weight data point in the priority queue.
+ * @return The lowest-weight data point in the queue.
+ */
 DataPoint HeapPQueue::dequeue() {
     if (isEmpty()) {
         error("What is the sound of one hand clapping?");
@@ -99,18 +119,23 @@ DataPoint HeapPQueue::dequeue() {
     return first;
 }
 
+/**
+ * Returns whether the priority queue is empty.
+ * @return Whether the priority queue is empty.
+ */
 bool HeapPQueue::isEmpty() const {
     return size() == 0;
 }
 
-/* This function is purely for you to use during testing. You can have it do whatever
- * you'd like, including nothing. We won't call this function during grading, so feel
- * free to fill it with whatever is most useful to you!
+/* Debug function.
  */
 void HeapPQueue::printDebugInfo() {
     /* . */
 }
 
+/**
+ * Increases allocated memory for the priority queue.
+ */
 void HeapPQueue::grow() {
     allocatedSize *= 2;
 
@@ -128,20 +153,31 @@ void HeapPQueue::grow() {
 
 /* * * * * * Test Cases Below This Point * * * * * */
 
-/* TODO: Add your own custom tests here! */
+ADD_TEST("Custom case test.") {
+    HeapPQueue pq;
 
+    pq.enqueue({ "R", 4 });
+    pq.enqueue({ "A", 5 });
+    pq.enqueue({ "B", 3 });
+    pq.enqueue({ "K", 7 });
+    pq.enqueue({ "G", 2 });
+    pq.enqueue({ "V", 9 });
+    pq.enqueue({ "T", 1 });
+    pq.enqueue({ "O", 8 });
+    pq.enqueue({ "S", 6 });
 
-
-
-
-
-
-
-
-
-
-
-
+    EXPECT_EQUAL(pq.size(), 9);
+    DataPoint expected = { "T", 1 };
+    EXPECT_EQUAL(pq.peek(), expected);
+    auto removed = pq.dequeue();
+    EXPECT_EQUAL(removed, expected);
+    EXPECT_EQUAL(pq.size(), 8);
+    DataPoint nextExpected = { "G", 2 };
+    EXPECT_EQUAL(pq.peek(), nextExpected);
+    auto nextRemoved = pq.dequeue();
+    EXPECT_EQUAL(nextRemoved, nextExpected);
+    EXPECT_EQUAL(pq.size(), 7);
+}
 
 /* * * * * Provided Tests Below This Point * * * * */
 

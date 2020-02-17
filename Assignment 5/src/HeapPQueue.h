@@ -1,3 +1,8 @@
+/*********************************************************
+ * File: HeapPQueue.h
+ *
+ * A class representing a priority queue using a binary heap.
+ */
 #ifndef HeapPQueue_Included
 #define HeapPQueue_Included
 
@@ -82,7 +87,7 @@ public:
     void printDebugInfo();
 
 private:
-    DataPoint* elems;         // The actual array of elements.
+    DataPoint* elems;   // The actual array of elements.
     int  allocatedSize; // How much space is allocated in our HeapPQueue.
     int  logicalSize;   // How many elements are logically in the HeapPQueue.
 
