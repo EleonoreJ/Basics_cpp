@@ -4,6 +4,17 @@
 using namespace std;
 
 
+/**
+ * Given a stream containing some number of DataPoints, returns the k elements from that
+ * data stream that have the highest weight, sorted in descending order of weight.
+ * If the number k is higher than the number of elements in the data stream, returns all 
+ * the elements of the data stream, sorted in descending order by weight.
+ * 
+ * @param stream A data stream containing a bunch of DataPoints.
+ * @param k The number of elements to read.
+ * @return The min{n, k} data points of the stream with the highest weight, sorted in descending
+ *         order of weight, where n is the number of items in the stream.
+ */
 Vector<DataPoint> topK(istream& stream, int k) {
     HeapPQueue pq;
 
@@ -51,9 +62,6 @@ Vector<DataPoint> topK(istream& stream, int k) {
 
     return topKElements;
 }
-
-
-
 
 
 
