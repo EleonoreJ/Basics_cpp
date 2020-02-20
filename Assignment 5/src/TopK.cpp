@@ -78,10 +78,22 @@ stringstream asStream(const Vector<DataPoint>& dataPoints) {
 
 /* TODO: Add your own custom tests here! */
 
-
-
-
-
+ADD_TEST("Stream many elements, ask for top many") {
+    Vector<DataPoint> vec;
+    for (int i = 0; i < 100; i++) vec.add({ "", i });
+    auto stream = asStream(vec);
+    int start = 0;
+    int end = vec.size() - 1;
+    while (start < end) {
+        DataPoint tmp = vec[start];
+        vec[start] = vec[end];
+        vec[end] = tmp;
+        start ++;
+        end --;
+    }
+    Vector<DataPoint> expected = vec;
+    EXPECT_EQUAL(topK(stream, 100), expected);
+}
 
 /* * * * * Provided Tests Below This Point * * * * */
 
