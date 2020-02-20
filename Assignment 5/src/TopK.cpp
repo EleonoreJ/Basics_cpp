@@ -4,6 +4,17 @@
 using namespace std;
 
 
+/**
+ * Given a stream containing some number of DataPoints, returns the k elements from that
+ * data stream that have the highest weight, sorted in descending order of weight.
+ * If the number k is higher than the number of elements in the data stream, returns all 
+ * the elements of the data stream, sorted in descending order by weight.
+ * 
+ * @param stream A data stream containing a bunch of DataPoints.
+ * @param k The number of elements to read.
+ * @return The min{n, k} data points of the stream with the highest weight, sorted in descending
+ *         order of weight, where n is the number of items in the stream.
+ */
 Vector<DataPoint> topK(istream& stream, int k) {
     HeapPQueue pq;
 
@@ -54,9 +65,6 @@ Vector<DataPoint> topK(istream& stream, int k) {
 
 
 
-
-
-
 /* * * * * * Test Cases Below This Point * * * * * */
 
 /* Helper function that, given a list of data points, produces a stream from them. */
@@ -70,10 +78,22 @@ stringstream asStream(const Vector<DataPoint>& dataPoints) {
 
 /* TODO: Add your own custom tests here! */
 
-
-
-
-
+ADD_TEST("Stream many elements, ask for top many") {
+    Vector<DataPoint> vec;
+    for (int i = 0; i < 100; i++) vec.add({ "", i });
+    auto stream = asStream(vec);
+    int start = 0;
+    int end = vec.size() - 1;
+    while (start < end) {
+        DataPoint tmp = vec[start];
+        vec[start] = vec[end];
+        vec[end] = tmp;
+        start ++;
+        end --;
+    }
+    Vector<DataPoint> expected = vec;
+    EXPECT_EQUAL(topK(stream, 100), expected);
+}
 
 /* * * * * Provided Tests Below This Point * * * * */
 
