@@ -1,3 +1,4 @@
+/* Program which returns a list sorted with complexity O(nlog(k)) */
 #include "Combine.h"
 #include "Testing/CombineTests.h"
 using namespace std;
@@ -6,18 +7,25 @@ Vector<DataPoint> merge(Vector<DataPoint>& left, Vector<DataPoint>& right){
     Vector<DataPoint> v;
     int l = 0;
     int r = 0;
+
+    /* while there is still elements in both left and right */
     while(l<left.size() and r<right.size()){
+
+        /* if the element from left is smaller to the element from right, we add it to the list */
         if (left[l].weight <= right[r].weight){
             v.add(left[l]);
             l++;
             continue;
         }
+
+        /* if the element from right is smaller to the element from left, we add it to the list */
         if (right[r].weight < left[l].weight){
             v.add(right[r]);
             r++;
         }
     }
 
+    /* we add the rest of the elements to the list*/
     if (l == left.size()){
         return v = v + right.subList(r);
     }
@@ -32,11 +40,12 @@ Vector<DataPoint> merge(Vector<DataPoint>& left, Vector<DataPoint>& right){
         return v[0];
     }
 
-
+    /* split sequence into 2 */
     int half = v.size()/2;
     Vector<Vector<DataPoint>> left = v.subList(0,half);
     Vector<Vector<DataPoint>> right = v.subList(half);
 
+    /* merge both parts */
     Vector<DataPoint> l = mergesort(left);
     Vector<DataPoint> r = mergesort(right);
     return merge(l,r);
@@ -50,15 +59,17 @@ Vector<DataPoint> combine(const Vector<Vector<DataPoint>>& sequences) {
 
 /* * * * * * Test Cases Below This Point * * * * * */
 
-/* TODO: Add your own custom tests here! */
 
+ADD_TEST("Provided Test: Test if their is only one sequence with multiples examples.") {
+    DataPoint robin        = { "Robin",          2411 };
+    DataPoint eleonore  = { "Eleonore",  2810 };
 
-
-
-
-
-
-
+    /* Try merging in several different orders. */
+    auto merged = combine({{ robin, eleonore }});
+    EXPECT_EQUAL(merged.size(), 2);
+    EXPECT_EQUAL(merged[0], robin);
+    EXPECT_EQUAL(merged[1], eleonore);
+}
 
 
 
