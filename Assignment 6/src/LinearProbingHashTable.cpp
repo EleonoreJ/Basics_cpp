@@ -14,8 +14,12 @@ LinearProbingHashTable::LinearProbingHashTable(HashFunction<std::string> hashFn)
     allocatedSize = hashFunction.numSlots();
     elems = new Slot[allocatedSize];
 
-
+    for (int i=0; i<allocatedSize; i++){
+        elems[i].isEmpty = true;
+        elems[i].tombstone = false;
+    }
 }
+
 
 LinearProbingHashTable::~LinearProbingHashTable() {
     /**
@@ -31,6 +35,7 @@ int LinearProbingHashTable::size() const {
      */
     return logicalSize;
 }
+
 
 bool LinearProbingHashTable::isEmpty() const {
     /**
@@ -52,7 +57,7 @@ bool LinearProbingHashTable::insert(const string& elem) {
 
     int idx = hashFunction(elem);
 
-    while (!elems[idx].isEmpty){
+    while (!elems[idx].isEmpty && !elems[idx].tombstone){
 
         idx++;
 
@@ -71,14 +76,10 @@ bool LinearProbingHashTable::insert(const string& elem) {
 
 bool LinearProbingHashTable::contains(const string& elem) const {
 
-    if (isEmpty()){
-        return false;
-    }
-
     int idx = hashFunction(elem);
 
     while (!elems[idx].isEmpty) {
-        if (elems[idx].value == elem){
+        if (elems[idx].value == elem && !elems[idx].tombstone){
             return true;
         }
         idx++;
@@ -99,16 +100,25 @@ bool LinearProbingHashTable::contains(const string& elem) const {
 bool LinearProbingHashTable::remove(const string& elem) {
 
     if (!contains(elem)){
-        error("cannot remove a element which doesn't exist");
+        return false;
     }
 
     int idx = hashFunction(elem);
 
-    while(elems[idx].value != elem){
+    while(!elems[idx].isEmpty){
+        if (elems[idx].value == elem && !elems[idx].tombstone){
+            elems[idx].tombstone = true;
+            logicalSize--;
+            return true;
+        }
+
         idx++;
 
-
+        if (idx == allocatedSize){
+            idx = 0;
+        }
     }
+
 
     return false;
 }
