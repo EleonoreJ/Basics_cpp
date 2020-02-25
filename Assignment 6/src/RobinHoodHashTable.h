@@ -61,14 +61,16 @@ public:
     void printDebugInfo() const;
 
 private:
-    /* TODO: Add any private member variables, member functions, or member
-     * types that you'd like. You're welcome to implement this type however
-     * you'd like, provided that you do all your own memory management, you
-     * don't use any container types (e.g. Vector, HashSet, etc.), and
-     * that you use Robin Hood hashing with backward-shift deletion.
-     *
-     * TODO: Delete this comment before submitting.
-     */
+    struct Slot {
+        std::string value;
+        bool isEmpty;
+        int distance;
+    };
+
+    Slot* elems;   // The actual array of elements.
+    int  allocatedSize; // How much space is allocated in our LinearProbingHashTable.
+    int  logicalSize;   // How many elements are logically in the LinearProbingHashTable.
+    HashFunction<std::string> hashFunction; // stores the hash function
 
 
     DISALLOW_COPYING_OF(RobinHoodHashTable);

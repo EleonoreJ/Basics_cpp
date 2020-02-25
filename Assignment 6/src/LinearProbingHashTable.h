@@ -61,12 +61,6 @@ public:
     void printDebugInfo() const;
 
 private:
-    /* Type representing a slot in a linear probing table.
-     *
-     * TODO: When you start implementing the remove operation, edit this
-     * type however you'd like in order to support tombstones. Then,
-     * delete this comment.
-     */
     struct Slot {
         std::string value;
         bool isEmpty;
@@ -77,15 +71,6 @@ private:
     int  allocatedSize; // How much space is allocated in our LinearProbingHashTable.
     int  logicalSize;   // How many elements are logically in the LinearProbingHashTable.
     HashFunction<std::string> hashFunction; // stores the hash function
-
-    /* TODO: Add any private member variables, member functions, or member
-     * types that you'd like. You're welcome to implement this type however
-     * you'd like, provided that you do all your own memory management, you
-     * don't use any container types (e.g. Vector, HashSet, etc.), and that
-     * you use linear probing with tombstones.
-     *
-     * TODO: Delete this comment before submitting.
-     */
 
 
     DISALLOW_COPYING_OF(LinearProbingHashTable);
