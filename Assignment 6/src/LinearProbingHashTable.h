@@ -70,6 +70,7 @@ private:
     struct Slot {
         std::string value;
         bool isEmpty;
+        bool tombstone;
     };
 
     Slot* elems;   // The actual array of elements.
