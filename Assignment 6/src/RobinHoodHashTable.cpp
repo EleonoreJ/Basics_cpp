@@ -2,9 +2,10 @@
 #include "Testing/RobinHoodTests.h"
 using namespace std;
 
+
 RobinHoodHashTable::RobinHoodHashTable(HashFunction<string> hashFn) {
     /**
-     * Constructor. Creates a new, empty priority queue.
+     * Constructor. Creates a new, empty hash table.
      */
 
     hashFunction = hashFn;
@@ -12,7 +13,7 @@ RobinHoodHashTable::RobinHoodHashTable(HashFunction<string> hashFn) {
     allocatedSize = hashFunction.numSlots();
     elems = new Slot[allocatedSize];
 
-    for (int i=0; i<allocatedSize; i++){
+    for (int i = 0; i < allocatedSize; i++) {
         elems[i].isEmpty = true;
         elems[i].distance = 0;
     }
@@ -20,21 +21,23 @@ RobinHoodHashTable::RobinHoodHashTable(HashFunction<string> hashFn) {
 
 RobinHoodHashTable::~RobinHoodHashTable() {
     /**
-     * Destructor. Cleans up all memory allocated by this priority queue.
+     * Destructor. Cleans up all memory allocated to the hash table.
      */
+
     delete[] elems;
 }
 
 int RobinHoodHashTable::size() const {
     /**
-     * Return the number of space used.
+     * Returns the actual number of elements in the has table.
      */
+
     return logicalSize;
 }
 
 bool RobinHoodHashTable::isEmpty() const {
     /**
-     * return if no space is being used.
+     * Returns whether the table is empty.
      */
 
     if (logicalSize == 0){
@@ -45,14 +48,14 @@ bool RobinHoodHashTable::isEmpty() const {
 
 bool RobinHoodHashTable::insert(const string& elem) {
 
-    if (logicalSize == allocatedSize || contains(elem)){
+    if (logicalSize == allocatedSize || contains(elem)) {
         return false;
     }
 
     int idx = hashFunction(elem);
     int distance = 0;
 
-    while (!elems[idx].isEmpty && elems[idx].distance >= distance){
+    while (!elems[idx].isEmpty && elems[idx].distance >= distance) {
         idx++;
         distance++;
 
@@ -63,7 +66,7 @@ bool RobinHoodHashTable::insert(const string& elem) {
 
     string next = elem;
 
-    while (!elems[idx].isEmpty){
+    while (!elems[idx].isEmpty) {
 
         Slot previous = elems[idx];
 
@@ -93,17 +96,17 @@ bool RobinHoodHashTable::contains(const string& elem) const {
     int distance = 0;
 
     while (!elems[idx].isEmpty && elems[idx].distance >= distance) {
-        if (elems[idx].value == elem){
+        if (elems[idx].value == elem) {
             return true;
         }
         idx++;
         distance++;
 
-        if (idx == allocatedSize){
+        if (idx == allocatedSize) {
             idx = 0;
         }
 
-        if (idx == hashFunction(elem)){
+        if (idx == hashFunction(elem)) {
             break;
         }
     }
@@ -113,21 +116,21 @@ bool RobinHoodHashTable::contains(const string& elem) const {
 
 bool RobinHoodHashTable::remove(const string& elem) {
 
-    if (!contains(elem)){
+    if (!contains(elem)) {
         return false;
     }
 
     int idx = hashFunction(elem);
 
+    while (!elems[idx].isEmpty) {
 
-    while(!elems[idx].isEmpty){
-        if (elems[idx].value == elem){
+        if (elems[idx].value == elem) {
             break;
         }
 
         idx++;
 
-        if (idx == allocatedSize){
+        if (idx == allocatedSize) {
             idx = 0;
         }
     }
@@ -135,24 +138,55 @@ bool RobinHoodHashTable::remove(const string& elem) {
     elems[idx].isEmpty = true;
     logicalSize--;
 
-    while (!elems[idx+1].isEmpty && elems[idx + 1].distance != 0){
+    int nextIdx;
+    if (idx == allocatedSize-1) {
+        nextIdx = 0;
+    } else {
+        nextIdx = idx + 1;
+    }
 
-        swap(elems[idx], elems[idx + 1]);
-        elems[idx].distance--;
-        idx++;
+
+//    while (!elems[idx+1].isEmpty && elems[idx + 1].distance != 0){
+
+//        swap(elems[idx], elems[idx + 1]);
+//        elems[idx].distance--;
+//        idx++;
 
 
-        if (idx == allocatedSize-1 && !elems[0].isEmpty && elems[0].distance != 0){
-            swap(elems[idx], elems[0]);
-            idx=0;
+//        if (idx == allocatedSize-1 && !elems[0].isEmpty && elems[0].distance != 0){
+//            swap(elems[idx], elems[0]);
+//            idx=0;
+//        }
+
+
+
+    while (!elems[nextIdx].isEmpty && elems[nextIdx].distance != 0) {
+
+        elems[nextIdx].distance--;
+        swap(elems[idx], elems[nextIdx]);
+
+        idx = nextIdx;
+
+        if (idx == allocatedSize-1) {
+            nextIdx = 0;
+        } else {
+            nextIdx = idx + 1;
         }
+
     }
 
     return true;
 }
 
 void RobinHoodHashTable::printDebugInfo() const {
-    cout << elems << endl;
+    for (int i = 0; i<allocatedSize; i++){
+        if (!elems[i].isEmpty) {
+            cout << elems[i].value << endl;
+        }
+        else {
+            cout << "{}" << endl;
+        }
+    }
 }
 
 /* * * * * * Test Cases Below This Point * * * * * */
@@ -603,6 +637,7 @@ ADD_TEST("Provided Test: Deletes around the end of the table.") {
 
     /* Delete three of the values. */
     for (int i = 0; i < 3; i++) {
+        cout << i << endl;
         EXPECT(table.remove(to_string(i)));
     }
     EXPECT_EQUAL(table.size(), 2);
