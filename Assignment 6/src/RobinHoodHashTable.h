@@ -67,10 +67,10 @@ private:
         int distance;
     };
 
-    Slot* elems;   // The actual array of elements.
-    int  allocatedSize; // How much space is allocated in our LinearProbingHashTable.
-    int  logicalSize;   // How many elements are logically in the LinearProbingHashTable.
-    HashFunction<std::string> hashFunction; // stores the hash function
+    Slot* elems;                            // The actual array of elements.
+    int  allocatedSize;                     // How much space is allocated for the hash table..
+    int  logicalSize;                       // How many elements are actually used in the hash table.
+    HashFunction<std::string> hashFunction; // The associated hash function.
 
 
     DISALLOW_COPYING_OF(RobinHoodHashTable);
