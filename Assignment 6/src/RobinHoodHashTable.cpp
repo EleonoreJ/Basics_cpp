@@ -135,19 +135,16 @@ bool RobinHoodHashTable::remove(const string& elem) {
     elems[idx].isEmpty = true;
     logicalSize--;
 
-    while (!elems[idx+1].isEmpty){
+    while (!elems[idx+1].isEmpty && elems[idx + 1].distance != 0){
 
-        if (idx == allocatedSize){
-            swap(elems[idx], elems[0]);
-        }
-
-        else{
-            swap(elems[idx], elems[idx + 1]);
-        }
+        swap(elems[idx], elems[idx + 1]);
+        elems[idx].distance--;
         idx++;
 
-        if (idx == allocatedSize){
-            idx = 0;
+
+        if (idx == allocatedSize-1 && !elems[0].isEmpty && elems[0].distance != 0){
+            swap(elems[idx], elems[0]);
+            idx=0;
         }
     }
 
@@ -592,6 +589,7 @@ ADD_TEST("Provided Test: Doesn't backward-shift elements from their homes.") {
     EXPECT(table.contains("25"));
     EXPECT(table.contains("35"));
 }
+
 
 ADD_TEST("Provided Test: Deletes around the end of the table.") {
     /* Everything goes in slot 8. */
