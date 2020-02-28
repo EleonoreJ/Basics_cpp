@@ -85,27 +85,45 @@ Q12:
 
 
 
-Q13:
+Q13: Chained Hashing.
+Costs of successful and unsuccessful insertions is quite constant across different load factors
+(approx. 770ns for successful insertions, 470ns for unsuccessful insertions). It gets only linearly
+slower as the load factor increases.
+We observe the same tendency for lookups and removals.
 
 
 
-
-Q14:
-
-
-
-
-Q15:
-
-
-
-
-Q16:
+Q14: Linear Probing.
+As expected, costs for insertions increase as the load factor increases. That is because we move
+to the next slot until we find a blank spot or tombstone to insert a new element. 
+The fuller the table, the longer it will take.
+Costs of lookups and removals follow the same tendency, with unsuccessful lookups and removals
+taking longer in average as the table is fuller: we have a large variance in how long it's going 
+to take to find elements.
 
 
 
+Q15: Robin Hood Hashing.
+With Robin Hood Hashing, we make unsuccessful lookups/removals faster than with linear probing because we
+compare the distances of the item to insert and the item being looked up.
 
-Q17:
+
+
+Q16: The chained hash table will use the most memory as it uses pointers in order to search the linked
+list. With open-addressing on the other hand we do not follow pointers between list nodes, so a linear probing
+or a Robin Hood hash table will use less memory. Robin Hood uses slightly less memory than linear probing since
+we do not use tombstones.
+
+
+
+Q17: Open-addressing will be faster and use less memory than chained hashing for lower load factors but
+get way slower than chained hashing when the load factor approaches 1.
+
+For alpha < ~0.7: prefer open-addressing over chained hashing. Less memory used and usually faster.
+Compared to linear probing, Robin Hood is the most efficient of the two open-addressing hashing method, 
+as it prevents slow unsuccessful lookups.
+
+For alpha > ~0.7: prefer chained hashing over open-addressing. More memory used but way faster.
 
 
 

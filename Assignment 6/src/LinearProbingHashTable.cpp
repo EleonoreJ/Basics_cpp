@@ -3,65 +3,69 @@
 using namespace std;
 
 
-
+/**
+ * Constructs a new linear probing table that uses the hash function given
+ * as the argument.
+ */
 LinearProbingHashTable::LinearProbingHashTable(HashFunction<std::string> hashFn) {
-    /**
-     * Constructor. Creates a new, empty priority queue.
-     */
-
+    
     hashFunction = hashFn;
     logicalSize = 0;
     allocatedSize = hashFunction.numSlots();
     elems = new Slot[allocatedSize];
 
-    for (int i=0; i<allocatedSize; i++){
+    for (int i = 0; i < allocatedSize; i++) {
         elems[i].isEmpty = true;
         elems[i].tombstone = false;
     }
 }
 
-
+/**
+ * Cleans up all memory allocated by this hash table.
+ */
 LinearProbingHashTable::~LinearProbingHashTable() {
-    /**
-     * Destructor. Cleans up all memory allocated by this priority queue.
-     */
     delete[] elems;
 }
 
-
+/**
+ * Returns the number of elements in the table.
+ */
 int LinearProbingHashTable::size() const {
-    /**
-     * Return the number of space used.
-     */
     return logicalSize;
 }
 
-
+/**
+ * Returns whether the table is empty.
+ */
 bool LinearProbingHashTable::isEmpty() const {
-    /**
-     * return if no space is being used.
-     */
 
-    if (logicalSize == 0){
+    if (logicalSize == 0) {
         return true;
     }
     return false;
 }
 
-
+/**
+ * Inserts the specified element into this hash table. If the element already
+ * exists, this leaves the table unchanged. If there is no space in the table
+ * to insert an element - that is, every slot is full - this returns false to 
+ * indicate that there is no more space.
+ *
+ * This function returns whether the element was inserted into the table.
+ */
 bool LinearProbingHashTable::insert(const string& elem) {
 
-    if (logicalSize == allocatedSize || contains(elem)){
+    if (logicalSize == allocatedSize || contains(elem)) {
         return false;
     }
 
     int idx = hashFunction(elem);
 
-    while (!elems[idx].isEmpty && !elems[idx].tombstone){
+    while (!elems[idx].isEmpty && !elems[idx].tombstone) {
 
         idx++;
 
-        if (idx == allocatedSize){
+        if (idx == allocatedSize) {
             idx = 0;
         }
     }
@@ -73,22 +77,24 @@ bool LinearProbingHashTable::insert(const string& elem) {
     return true;
 }
 
-
+/**
+ * Returns whether the specified key is contained in this hash tasble.
+ */
 bool LinearProbingHashTable::contains(const string& elem) const {
 
     int idx = hashFunction(elem);
 
     while (!elems[idx].isEmpty) {
-        if (elems[idx].value == elem && !elems[idx].tombstone){
+        if (elems[idx].value == elem && !elems[idx].tombstone) {
             return true;
         }
         idx++;
 
-        if (idx == allocatedSize){
+        if (idx == allocatedSize) {
             idx = 0;
         }
 
-        if (idx == hashFunction(elem)){
+        if (idx == hashFunction(elem)) {
             break;
         }
     }
@@ -96,17 +102,25 @@ bool LinearProbingHashTable::contains(const string& elem) const {
     return false;
 }
 
-
+/**
+ * Removes the specified element from this hash table. If the element is not
+ * present in the hash table, this operation is a no-op.
+ *
+ * You should implement this operation using tombstone deletion - mark the
+ * slot containing the element as a tombstone.
+ *
+ * Returns true if the element was removed and false otherwise.
+ */
 bool LinearProbingHashTable::remove(const string& elem) {
 
-    if (!contains(elem)){
+    if (!contains(elem)) {
         return false;
     }
 
     int idx = hashFunction(elem);
 
-    while(!elems[idx].isEmpty){
-        if (elems[idx].value == elem && !elems[idx].tombstone){
+    while(!elems[idx].isEmpty) {
+        if (elems[idx].value == elem && !elems[idx].tombstone) {
             elems[idx].tombstone = true;
             logicalSize--;
             return true;
@@ -114,7 +128,7 @@ bool LinearProbingHashTable::remove(const string& elem) {
 
         idx++;
 
-        if (idx == allocatedSize){
+        if (idx == allocatedSize) {
             idx = 0;
         }
     }
@@ -124,7 +138,7 @@ bool LinearProbingHashTable::remove(const string& elem) {
 }
 
 void LinearProbingHashTable::printDebugInfo() const {
-    cout << elems << endl;
+    // . //
 }
 
 

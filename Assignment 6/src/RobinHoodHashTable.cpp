@@ -3,10 +3,11 @@
 using namespace std;
 
 
+/**
+ * Constructs a new Robin Hood hash table that uses the hash function given
+ * as the argument.
+ */
 RobinHoodHashTable::RobinHoodHashTable(HashFunction<string> hashFn) {
-    /**
-     * Constructor. Creates a new, empty hash table.
-     */
 
     hashFunction = hashFn;
     logicalSize = 0;
@@ -19,33 +20,39 @@ RobinHoodHashTable::RobinHoodHashTable(HashFunction<string> hashFn) {
     }
 }
 
+/**
+ * Cleans up all memory allocated by this hash table.
+ */
 RobinHoodHashTable::~RobinHoodHashTable() {
-    /**
-     * Destructor. Cleans up all memory allocated to the hash table.
-     */
-
     delete[] elems;
 }
 
+/**
+ * Returns the number of elements in the table.
+ */
 int RobinHoodHashTable::size() const {
-    /**
-     * Returns the actual number of elements in the has table.
-     */
-
     return logicalSize;
 }
 
+/**
+ * Returns whether the table is empty.
+ */
 bool RobinHoodHashTable::isEmpty() const {
-    /**
-     * Returns whether the table is empty.
-     */
 
-    if (logicalSize == 0){
+    if (logicalSize == 0) {
         return true;
     }
     return false;
 }
 
+/**
+ * Inserts the specified element into this hash table. If the element already
+ * exists, this leaves the table unchanged. If there is no space in the table
+ * to insert an element - that is, every slot is full - this returns false to 
+ * indicate that there is no more space.
+ *
+ * This function returns whether the element was inserted into the table.
+ */
 bool RobinHoodHashTable::insert(const string& elem) {
 
     if (logicalSize == allocatedSize || contains(elem)) {
@@ -59,7 +66,7 @@ bool RobinHoodHashTable::insert(const string& elem) {
         idx++;
         distance++;
 
-        if (idx == allocatedSize){
+        if (idx == allocatedSize) {
             idx = 0;
         }
     }
@@ -77,7 +84,7 @@ bool RobinHoodHashTable::insert(const string& elem) {
         distance = previous.distance + 1;
         idx++;
 
-        if (idx == allocatedSize){
+        if (idx == allocatedSize) {
             idx = 0;
         }
     }
@@ -90,6 +97,9 @@ bool RobinHoodHashTable::insert(const string& elem) {
     return true;
 }
 
+/**
+ * Returns whether the specified key is contained in this hash tasble.
+ */
 bool RobinHoodHashTable::contains(const string& elem) const {
 
     int idx = hashFunction(elem);
@@ -114,6 +124,13 @@ bool RobinHoodHashTable::contains(const string& elem) const {
     return false;
 }
 
+/**
+ * Removes the specified element from this hash table using backward-shift 
+ * deletion. If the element is not present in the hash table, this operation 
+ * is a no-op.
+ * 
+ * Returns true if the element was removed and false otherwise.
+ */
 bool RobinHoodHashTable::remove(const string& elem) {
 
     if (!contains(elem)) {
@@ -129,7 +146,6 @@ bool RobinHoodHashTable::remove(const string& elem) {
         }
 
         idx++;
-
         if (idx == allocatedSize) {
             idx = 0;
         }
@@ -145,29 +161,13 @@ bool RobinHoodHashTable::remove(const string& elem) {
         nextIdx = idx + 1;
     }
 
-
-//    while (!elems[idx+1].isEmpty && elems[idx + 1].distance != 0){
-
-//        swap(elems[idx], elems[idx + 1]);
-//        elems[idx].distance--;
-//        idx++;
-
-
-//        if (idx == allocatedSize-1 && !elems[0].isEmpty && elems[0].distance != 0){
-//            swap(elems[idx], elems[0]);
-//            idx=0;
-//        }
-
-
-
     while (!elems[nextIdx].isEmpty && elems[nextIdx].distance != 0) {
 
         elems[nextIdx].distance--;
         swap(elems[idx], elems[nextIdx]);
 
         idx = nextIdx;
-
-        if (idx == allocatedSize-1) {
+        if (idx == allocatedSize - 1) {
             nextIdx = 0;
         } else {
             nextIdx = idx + 1;
@@ -178,10 +178,13 @@ bool RobinHoodHashTable::remove(const string& elem) {
     return true;
 }
 
+/**
+ * Debugging function.
+ */
 void RobinHoodHashTable::printDebugInfo() const {
     for (int i = 0; i<allocatedSize; i++){
         if (!elems[i].isEmpty) {
-            cout << elems[i].value << endl;
+            cout << elems[i].value + " (" + to_string(elems[i].distance) + ")" << endl;
         }
         else {
             cout << "{}" << endl;
@@ -637,7 +640,6 @@ ADD_TEST("Provided Test: Deletes around the end of the table.") {
 
     /* Delete three of the values. */
     for (int i = 0; i < 3; i++) {
-        cout << i << endl;
         EXPECT(table.remove(to_string(i)));
     }
     EXPECT_EQUAL(table.size(), 2);
