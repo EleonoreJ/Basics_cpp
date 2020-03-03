@@ -1,15 +1,75 @@
 #include "Labyrinth.h"
 #include "Demos/MazeGenerator.h"
 #include "Testing/LabyrinthTests.h"
+#include "hashmap.h"
+#include "hashset.h"
+#include <typeinfo>
 using namespace std;
 
 bool isPathToFreedom(MazeCell* start, const string& moves) {
-    /* TODO: Delete this comment and the next few lines, then implement
-     * this function.
-     */
-    (void) start;
-    (void) moves;
-    return false;
+    HashMap<string, bool> items = {{"Spellbook", false},
+                                   {"Potion", false},
+                                   {"Wand", false}};
+
+
+    string value = start->whatsHere;
+    if (items.containsKey(value)){
+        items[value]=true;
+    }
+
+
+//    HashMap<char, MazeCell*> dir = {{'N', start->north} ,{'S', start->south} ,{'W', start->west},{'E',start->east}};
+    HashSet<char> dir = {'N', 'W', 'S', 'E'};
+
+    for (int i=0; i < moves.length(); i++){
+
+
+
+        if (!dir.contains(moves[i])){
+            error("this is not a correct direction");
+        }
+
+        if (moves[i] == 'N'){
+            if (start->north != nullptr){
+            start = start->north;
+            }
+        }
+
+        if (moves[i] == 'S'){
+            if (start->south != nullptr){
+            start = start->south;
+            }
+        }
+
+        if (moves[i] == 'W'){
+            if (start->west != nullptr){
+            start = start->west;
+            }
+        }
+
+        if (moves[i] == 'E'){
+            if (start->east != nullptr){
+            start = start->east;
+            }
+        }
+
+//        if (dir[moves[i]] != nullptr){
+//            start = dir[moves[i]];
+//        }
+
+        string value = start->whatsHere;
+        if (items.containsKey(value)){
+            items[value]=true;
+        }
+
+    }
+
+    for(string item: items){
+        if (!items[item]){
+            return false;
+        }
+    }
+    return true;
 }
 
 
