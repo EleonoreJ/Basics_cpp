@@ -56,6 +56,11 @@ string fromDNA(Nucleotide* dna) {
     return sequence;
 }
 
+
+/**
+ * Helper function to insert a new nucleotide with given value into a strand
+ * represented by a doubly-linked list with head and tail.
+ */
 void insert(Nucleotide*& head, Nucleotide*& tail, char& value) {
 
     Nucleotide* newNucl = new Nucleotide;
@@ -113,7 +118,11 @@ Nucleotide* findFirst(Nucleotide* dna, Nucleotide* target) {
     while (tmp != nullptr) {
 
         string tmpStr = fromDNA(tmp);
+        int pos = tmpStr.find(targetStr);
         if (tmpStr.find(targetStr) != string::npos) {
+            for (int i = 0; i < pos; i++) {
+                tmp = tmp->next;
+            }
             return tmp;
         }
 
