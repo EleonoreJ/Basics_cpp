@@ -145,10 +145,25 @@ Nucleotide* findFirst(Nucleotide* dna, Nucleotide* target) {
  * This function should not use any containers (e.g. Vector, HashSet, etc.)
  */
 bool spliceFirst(Nucleotide*& dna, Nucleotide* target) {
-    /* TODO: Delete this comment and the next lines and implement this function. */
-    (void) dna;
-    (void) target;
-    return false;
+
+    Nucleotide* first = findFirst(dna, target);
+    if (first == nullptr) {
+        return false;
+    }
+
+//    deleteNucleotides(first);
+
+    int lengthTarget = fromDNA(target).size();
+
+    Nucleotide* last = first;
+    for (int i = 0; i < lengthTarget - 1; i++) {
+        last = last->next;
+    }
+//    first->prev->next = last->next;
+
+    deleteNucleotides(first);
+
+    return true;
 }
 
 
