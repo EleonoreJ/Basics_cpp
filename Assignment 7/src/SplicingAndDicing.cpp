@@ -56,6 +56,25 @@ string fromDNA(Nucleotide* dna) {
     return sequence;
 }
 
+void insert(Nucleotide*& head, Nucleotide*& tail, char& value) {
+
+    Nucleotide* newNucl = new Nucleotide;
+    newNucl->value = value;
+
+    if (head == nullptr) {
+        head = newNucl;
+        newNucl->prev = nullptr;
+
+    } else {
+        newNucl->prev = tail;
+        tail->next = newNucl;
+    }
+
+    newNucl->next = nullptr;
+    tail = newNucl;
+
+}
+
 /**
  * Produces a new strand of nucleotides spelling out the sequence given in
  * str.
@@ -65,23 +84,14 @@ string fromDNA(Nucleotide* dna) {
  */
 Nucleotide* toStrand(const string& str) {
 
-    Nucleotide* strand = nullptr;
+    Nucleotide* head = nullptr;
+    Nucleotide* tail = head;
 
-    for (char ch : str) {
-
-        Nucleotide* curr = new Nucleotide;
-        curr->value = ch;
-        curr->prev = nullptr;
-        curr->next = strand;
-
-        if (strand != nullptr) {
-            strand->prev = curr;
-        }
-        strand = curr;
-
+    for (char ch: str) {
+        insert(head, tail, ch);
     }
 
-    return strand;
+    return head;
 
 }
 
