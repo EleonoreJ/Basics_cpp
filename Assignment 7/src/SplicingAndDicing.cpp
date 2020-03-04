@@ -66,22 +66,6 @@ string fromDNA(Nucleotide* dna) {
 Nucleotide* toStrand(const string& str) {
 
     Nucleotide* strand = nullptr;
-//    strand->prev = nullptr;
-
-//    for (char ch : str) {
-
-//        Nucleotide* curr = new Nucleotide;
-//        curr->value = ch;
-//        curr->prev = strand;
-//        curr->next = nullptr;
-
-//        if (strand != nullptr) {
-//            strand->next = curr;
-//        }
-//        strand = curr;
-//    }
-
-//    return strand;
 
     for (char ch : str) {
 
@@ -111,10 +95,23 @@ Nucleotide* toStrand(const string& str) {
  * This function should not use any containers (e.g. Vector, HashSet, etc.)
  */
 Nucleotide* findFirst(Nucleotide* dna, Nucleotide* target) {
-    /* TODO: Delete this comment and the next lines and implement this function. */
-    (void) dna;
-    (void) target;
+
+    Nucleotide* tmp = dna;
+
+    string targetStr = fromDNA(target);
+
+    while (tmp != nullptr) {
+
+        string tmpStr = fromDNA(tmp);
+        if (tmpStr.find(targetStr) != string::npos) {
+            return tmp;
+        }
+
+        tmp = tmp->next;
+    }
+
     return nullptr;
+
 }
 
 /**
