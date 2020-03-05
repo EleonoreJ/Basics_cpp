@@ -5,6 +5,7 @@
 #include <fstream>
 using namespace std;
 
+
 /**
  * Frees all memory in the chain of nucleotides pointed at by dna. If the
  * input is a null pointer, this function has no effect.
@@ -61,7 +62,7 @@ string fromDNA(Nucleotide* dna) {
  * Helper function to insert a new nucleotide with given value into a strand
  * represented by a doubly-linked list with head and tail.
  */
-void insert(Nucleotide*& head, Nucleotide*& tail, char& value) {
+void insertNucleotide(Nucleotide*& head, Nucleotide*& tail, char& value) {
 
     Nucleotide* newNucl = new Nucleotide;
     newNucl->value = value;
@@ -93,7 +94,7 @@ Nucleotide* toStrand(const string& str) {
     Nucleotide* tail = head;
 
     for (char ch: str) {
-        insert(head, tail, ch);
+        insertNucleotide(head, tail, ch);
     }
 
     return head;
@@ -134,6 +135,52 @@ Nucleotide* findFirst(Nucleotide* dna, Nucleotide* target) {
 }
 
 /**
+ * Helper function to delete a single nucleotide in a strand
+ * represented by a doubly-linked list with head and tail.
+ */
+void deleteNucleotide(Nucleotide*& head, Nucleotide*& tail, char& value) {
+
+    Nucleotide* tmp = head;
+
+    if (head == tail) {
+        if (head->value != value) {
+            return;
+        }
+        head = nullptr;
+        tail = nullptr;
+        delete tmp;
+        return;
+    }
+
+    if (head->value == value) {
+        head = head->next;
+        head->prev = nullptr;
+        delete tmp;
+        return;
+    }
+
+    else if (tail->value == value) {
+        tmp = tail;
+        tail = tail->prev;
+        tail->next = nullptr;
+        delete tmp;
+        return;
+    }
+
+    while (tmp->value != value) {
+        tmp = tmp->next;
+        if (!tmp) {
+            return;
+        }
+    }
+
+    tmp->next->prev = tmp->prev;
+    tmp->prev->next = tmp->next;
+    delete tmp;
+
+}
+
+/**
  * Removes the first copy of the sequence target that appears in the sequence
  * of nucleotides given as the dna parameter. If the nucleotide pointed at
  * by dna was removed, dna is updated to point to the first nucleotide after
@@ -146,26 +193,64 @@ Nucleotide* findFirst(Nucleotide* dna, Nucleotide* target) {
  */
 bool spliceFirst(Nucleotide*& dna, Nucleotide* target) {
 
+    if (target == nullptr) {
+        return true;
+    }
+
     Nucleotide* first = findFirst(dna, target);
     if (first == nullptr) {
         return false;
     }
 
-//    deleteNucleotides(first);
+//    string targetStr = fromDNA(target);
+//    int targetLength = targetStr.size();
 
-    int lengthTarget = fromDNA(target).size();
+//    Nucleotide* last = first;
+//    for (int i = 0; i < targetLength - 1; i++) {
+//        last = last->next;
+//    }
+
+//    Nucleotide* head = first;
+//    Nucleotide* tail = last;
+
+//    for (char ch: targetStr) {
+//        deleteNucleotide(head, tail, ch);
+//    }
+//    return true;
+
+    int targetLength = fromDNA(target).size();
 
     Nucleotide* last = first;
-    for (int i = 0; i < lengthTarget - 1; i++) {
+    for (int i = 0; i < targetLength; i++) {
         last = last->next;
     }
-//    first->prev->next = last->next;
 
-    deleteNucleotides(first);
+    Nucleotide* firstPrev = first->prev;
+
+    for (Nucleotide* curr = first; curr != last; ) {
+        Nucleotide* tmp = curr;
+        if (curr->next) {
+            curr->next->prev = nullptr;
+        }
+
+        if (curr->prev) {
+            curr->prev->next = nullptr;
+            curr = curr->next;
+        }
+
+        else {
+            first = curr->next;
+            curr = first;
+        }
+
+        delete tmp;
+    }
+
+    last->prev = firstPrev;
+    firstPrev->next = last;
 
     return true;
 }
-
 
 /* * * * * * Test Cases Below This Point * * * * * */
 
