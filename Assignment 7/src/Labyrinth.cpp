@@ -1,3 +1,5 @@
+/* Script which returns if the path in the labyrinth will end up to freedom */
+
 #include "Labyrinth.h"
 #include "Demos/MazeGenerator.h"
 #include "Testing/LabyrinthTests.h"
@@ -7,28 +9,30 @@
 using namespace std;
 
 bool isPathToFreedom(MazeCell* start, const string& moves) {
+
+    /* Items to get for freedom */
     HashMap<string, bool> items = {{"Spellbook", false},
                                    {"Potion", false},
                                    {"Wand", false}};
 
-
+    /* condition if we start on a case with an item */
     string value = start->whatsHere;
     if (items.containsKey(value)){
         items[value]=true;
     }
 
-
-//    HashMap<char, MazeCell*> dir = {{'N', start->north} ,{'S', start->south} ,{'W', start->west},{'E',start->east}};
+    /* Set with the correct directions */
     HashSet<char> dir = {'N', 'W', 'S', 'E'};
+
 
     for (int i=0; i < moves.length(); i++){
 
-
-
+        /* check if it is a correct direction*/
         if (!dir.contains(moves[i])){
             error("this is not a correct direction");
         }
 
+        /* We check for each move if it is possible */
         if (moves[i] == 'N'){
             if (start->north != nullptr){
             start = start->north;
@@ -53,10 +57,7 @@ bool isPathToFreedom(MazeCell* start, const string& moves) {
             }
         }
 
-//        if (dir[moves[i]] != nullptr){
-//            start = dir[moves[i]];
-//        }
-
+        /* at each move, we look at a possible item found*/
         string value = start->whatsHere;
         if (items.containsKey(value)){
             items[value]=true;
@@ -64,6 +65,7 @@ bool isPathToFreedom(MazeCell* start, const string& moves) {
 
     }
 
+    /* once we moved, we check that we have the 3 items to be free */
     for(string item: items){
         if (!items[item]){
             return false;

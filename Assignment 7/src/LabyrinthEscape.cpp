@@ -1,3 +1,4 @@
+/* find the paths for our specific labyrinths */
 #include "Demos/MazeGenerator.h"
 #include "Testing/LabyrinthEscapeTests.h"
 using namespace std;

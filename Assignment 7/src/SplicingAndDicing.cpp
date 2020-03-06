@@ -1,3 +1,7 @@
+/* scripts for playing with nucleotides,
+ * we added a function del_elems to delete a part of a sequence
+ * and a function insertNucleotides which inserts a Nucleotide in the sequence*/
+
 #include "SplicingAndDicing.h"
 #include "Testing/SplicingAndDicingTests.h"
 #include "vector.h"
@@ -6,17 +10,10 @@
 using namespace std;
 
 
-/**
- * Frees all memory in the chain of nucleotides pointed at by dna. If the
- * input is a null pointer, this function has no effect.
- *
- * This function should run in time O(n) and should not use any containers
- * (e.g. Vector, HashSet, etc.).
- */
-void deleteNucleotides(Nucleotide* dna) {
+void del_elems(Nucleotide*& init_condition, Nucleotide* end_condition){
+    /* delete a sequence from init_condition to end_condition*/
 
-    for (Nucleotide* curr = dna; curr; ) {
-
+    for (Nucleotide* curr = init_condition; curr!= end_condition; ) {
         Nucleotide* tmp = curr;
 
         if (curr->next) {
@@ -29,13 +26,24 @@ void deleteNucleotides(Nucleotide* dna) {
         }
 
         else {
-            dna = curr->next;
-            curr = dna;
+            init_condition = curr->next;
+            curr = init_condition;
         }
 
         delete tmp;
     }
+}
 
+/**
+ * Frees all memory in the chain of nucleotides pointed at by dna. If the
+ * input is a null pointer, this function has no effect.
+ *
+ * This function should run in time O(n) and should not use any containers
+ * (e.g. Vector, HashSet, etc.).
+ */
+void deleteNucleotides(Nucleotide* dna) {
+    /* delete dna entirely */
+    del_elems(dna, nullptr);
 }
 
 /**
@@ -63,6 +71,7 @@ string fromDNA(Nucleotide* dna) {
  * represented by a doubly-linked list with head and tail.
  */
 void insertNucleotide(Nucleotide*& head, Nucleotide*& tail, char& value) {
+
 
     Nucleotide* newNucl = new Nucleotide;
     newNucl->value = value;
@@ -151,11 +160,13 @@ bool spliceFirst(Nucleotide*& dna, Nucleotide* target) {
         return true;
     }
 
+    /* find the first elem to delete */
     Nucleotide* first = findFirst(dna, target);
     if (first == nullptr) {
         return false;
     }
 
+    /* find the elem after the deletion */
     int targetLength = fromDNA(target).size();
 
     Nucleotide* last = first;
@@ -165,28 +176,19 @@ bool spliceFirst(Nucleotide*& dna, Nucleotide* target) {
 
     Nucleotide* firstPrev = first->prev;
 
-    for (Nucleotide* curr = first; curr != last; ) {
-        Nucleotide* tmp = curr;
-        if (curr->next) {
-            curr->next->prev = nullptr;
-        }
+    /* delete sequence from first to last */
+    del_elems(first,last);
 
-        if (curr->prev) {
-            curr->prev->next = nullptr;
-            curr = curr->next;
-        }
-
-        else {
-            first = curr->next;
-            curr = first;
-        }
-
-        delete tmp;
+    if (last != nullptr){
+        last->prev = firstPrev;
     }
 
-    last->prev = firstPrev;
-    firstPrev->next = last;
-
+    if (firstPrev != nullptr){
+        firstPrev->next = last;
+    }
+    else{
+        dna = first;
+    }
     return true;
 }
 
