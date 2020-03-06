@@ -8,6 +8,7 @@
 #include <typeinfo>
 using namespace std;
 
+
 bool isPathToFreedom(MazeCell* start, const string& moves) {
 
     /* Items to get for freedom */
@@ -17,7 +18,7 @@ bool isPathToFreedom(MazeCell* start, const string& moves) {
 
     /* condition if we start on a case with an item */
     string value = start->whatsHere;
-    if (items.containsKey(value)){
+    if (items.containsKey(value)) {
         items[value]=true;
     }
 
@@ -25,49 +26,49 @@ bool isPathToFreedom(MazeCell* start, const string& moves) {
     HashSet<char> dir = {'N', 'W', 'S', 'E'};
 
 
-    for (int i=0; i < moves.length(); i++){
+    for (int i=0; i < moves.length(); i++) {
 
         /* check if it is a correct direction*/
-        if (!dir.contains(moves[i])){
+        if (!dir.contains(moves[i])) {
             error("this is not a correct direction");
         }
 
         /* We check for each move if it is possible */
-        if (moves[i] == 'N'){
-            if (start->north != nullptr){
+        if (moves[i] == 'N') {
+            if (start->north != nullptr) {
             start = start->north;
             }
         }
 
-        if (moves[i] == 'S'){
-            if (start->south != nullptr){
+        if (moves[i] == 'S') {
+            if (start->south != nullptr) {
             start = start->south;
             }
         }
 
-        if (moves[i] == 'W'){
-            if (start->west != nullptr){
+        if (moves[i] == 'W') {
+            if (start->west != nullptr) {
             start = start->west;
             }
         }
 
-        if (moves[i] == 'E'){
-            if (start->east != nullptr){
+        if (moves[i] == 'E') {
+            if (start->east != nullptr) {
             start = start->east;
             }
         }
 
         /* at each move, we look at a possible item found*/
         string value = start->whatsHere;
-        if (items.containsKey(value)){
+        if (items.containsKey(value)) {
             items[value]=true;
         }
 
     }
 
     /* once we moved, we check that we have the 3 items to be free */
-    for(string item: items){
-        if (!items[item]){
+    for(string item: items) {
+        if (!items[item]) {
             return false;
         }
     }

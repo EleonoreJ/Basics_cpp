@@ -1,6 +1,4 @@
-/* scripts for playing with nucleotides,
- * we added a function del_elems to delete a part of a sequence
- * and a function insertNucleotides which inserts a Nucleotide in the sequence*/
+/* Functions for playing with sequences of nucleotides represented by doubly linked lists */
 
 #include "SplicingAndDicing.h"
 #include "Testing/SplicingAndDicingTests.h"
@@ -10,10 +8,12 @@
 using namespace std;
 
 
-void del_elems(Nucleotide*& init_condition, Nucleotide* end_condition){
-    /* delete a sequence from init_condition to end_condition*/
+/**
+ * Helper function to delete a sequence from startNucl to endNucl.
+ */
+void deleteSequence(Nucleotide*& startNucl, Nucleotide* endNucl){
 
-    for (Nucleotide* curr = init_condition; curr!= end_condition; ) {
+    for (Nucleotide* curr = startNucl; curr!= endNucl; ) {
         Nucleotide* tmp = curr;
 
         if (curr->next) {
@@ -26,8 +26,8 @@ void del_elems(Nucleotide*& init_condition, Nucleotide* end_condition){
         }
 
         else {
-            init_condition = curr->next;
-            curr = init_condition;
+            startNucl = curr->next;
+            curr = startNucl;
         }
 
         delete tmp;
@@ -42,8 +42,8 @@ void del_elems(Nucleotide*& init_condition, Nucleotide* end_condition){
  * (e.g. Vector, HashSet, etc.).
  */
 void deleteNucleotides(Nucleotide* dna) {
-    /* delete dna entirely */
-    del_elems(dna, nullptr);
+    /* delete the full sequence */
+    deleteSequence(dna, nullptr);
 }
 
 /**
@@ -65,13 +65,11 @@ string fromDNA(Nucleotide* dna) {
     return sequence;
 }
 
-
 /**
  * Helper function to insert a new nucleotide with given value into a strand
  * represented by a doubly-linked list with head and tail.
  */
 void insertNucleotide(Nucleotide*& head, Nucleotide*& tail, char& value) {
-
 
     Nucleotide* newNucl = new Nucleotide;
     newNucl->value = value;
@@ -177,13 +175,13 @@ bool spliceFirst(Nucleotide*& dna, Nucleotide* target) {
     Nucleotide* firstPrev = first->prev;
 
     /* delete sequence from first to last */
-    del_elems(first,last);
+    deleteSequence(first, last);
 
-    if (last != nullptr){
+    if (last != nullptr) {
         last->prev = firstPrev;
     }
 
-    if (firstPrev != nullptr){
+    if (firstPrev != nullptr) {
         firstPrev->next = last;
     }
     else{
