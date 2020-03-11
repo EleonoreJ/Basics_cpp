@@ -98,12 +98,10 @@ string decodeText(Queue<Bit>& bits, HuffmanNode* tree) {
 
     while(!bits.isEmpty()){
 
-        HuffmanNode* next = new HuffmanNode;
+        HuffmanNode* next;
         HuffmanNode* node = tree;
 
-        node = tree;
         Bit bit = bits.peek();
-
 
         if (bit == 0){
             next = node->zero;
@@ -134,8 +132,6 @@ string decodeText(Queue<Bit>& bits, HuffmanNode* tree) {
         text = text + node->ch;
 
     }
-
-//    deleteTree(node);
 
     return text;
 }
@@ -250,9 +246,21 @@ HuffmanNode* decodeTree(Queue<Bit>& bits, Queue<char>& leaves) {
  * fewer than two distinct characters in the input string.
  */
 HuffmanResult compress(const string& text) {
-    /* TODO: Delete this comment and the next few lines, then implement this. */
-    (void) text;
-    return {};
+
+    HuffmanNode* tree = huffmanTreeFor(text);
+    Queue<Bit> treeBits;
+    Queue<char> treeLeaves;
+    encodeTree(tree, treeBits, treeLeaves);
+
+    HuffmanResult result;
+    result.treeBits = treeBits;
+    result.treeLeaves = treeLeaves;
+    result.messageBits = encodeText(text, tree);
+
+    deleteTree(tree);
+
+    return result;
+
 }
 
 /**
@@ -266,9 +274,18 @@ HuffmanResult compress(const string& text) {
  * implementation of compress.
  */
 string decompress(HuffmanResult& file) {
-    /* TODO: Delete this comment and the next few lines, then implement this. */
-    (void) file;
-    return "";
+
+    string result;
+
+    Queue<Bit> treeBits = file.treeBits;
+    Queue<char> treeLeaves = file.treeLeaves;
+    HuffmanNode* tree = decodeTree(treeBits, treeLeaves);
+    result = decodeText(file.messageBits, tree);
+
+    deleteTree(tree);
+
+    return result;
+
 }
 
 /* * * * * * Test Cases Below This Point * * * * * */
