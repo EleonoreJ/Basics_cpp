@@ -1,3 +1,5 @@
+/* program that uses Huffman coding to compress and decompress file */
+
 #include "Huffman.h"
 #include "Testing/HuffmanTests.h"
 #include "hashmap.h"
@@ -33,6 +35,7 @@ void deleteTree(HuffmanNode* tree) {
  */
 HuffmanNode* huffmanTreeFor(const string& str) {
 
+
     HashMap<char, double> frequencies;
     PriorityQueue<HuffmanNode*> queue;
 
@@ -40,6 +43,7 @@ HuffmanNode* huffmanTreeFor(const string& str) {
         error("The input is empty");
     }
 
+    /* get the frequency of each character */
     for (char ch: str) {
         if (!frequencies.containsKey(ch)) {
             frequencies[ch] = 1;
@@ -49,11 +53,14 @@ HuffmanNode* huffmanTreeFor(const string& str) {
         }
     }
 
+
     if (frequencies.size()==1) {
         error("There is only one character");
     }
 
+
     for (char ch: frequencies) {
+        /* enqueue each character with a priority, the hightest frequency, the less priority */
         HuffmanNode* node = new HuffmanNode;
         node->ch = ch;
         node->one =  nullptr;
@@ -61,14 +68,17 @@ HuffmanNode* huffmanTreeFor(const string& str) {
         queue.enqueue(node, frequencies[ch]);
     }
 
+    /* it stops when there is only one tree in the queue and return it */
     while(queue.size() != 1) {
 
+        /* dequeue the two nodes with the highest priority */
         double prio0 = queue.peekPriority();
         HuffmanNode* node0 = queue.dequeue();
 
         double prio1 = queue.peekPriority();
         HuffmanNode* node1 = queue.dequeue();
 
+        /* create a new node which becomes the parent of the two nodes above */
         HuffmanNode* node_parent = new HuffmanNode;
         node_parent->ch = '\0';
 
@@ -99,12 +109,14 @@ string decodeText(Queue<Bit>& bits, HuffmanNode* tree) {
 
     while(!bits.isEmpty()) {
 
-        HuffmanNode* next;
         HuffmanNode* node = tree;
+        HuffmanNode* next = tree;
 
         Bit bit = bits.peek();
-        if (bit == 0) next = node->zero;
-        else next = node->one;
+
+
+        if (bit == 0) {next = node->zero;}
+        else {next = node->one;}
 
         while (next != nullptr) {
 
@@ -113,6 +125,7 @@ string decodeText(Queue<Bit>& bits, HuffmanNode* tree) {
 
            if (bits.isEmpty()) break;
 
+           /* read each bit and reading the tree*/
            bit = bits.peek();
            if (bit == 0) next = node->zero;
            else next = node->one;
@@ -136,12 +149,15 @@ string decodeText(Queue<Bit>& bits, HuffmanNode* tree) {
  */
 
 HashMap<char, Queue<Bit>> get_dic(HuffmanNode* tree, Queue<Bit> bits, HashMap<char, Queue<Bit>>& Map){
+    /* function which creates a dictionnary encoding every character */
 
+    /* if it is a leave */
     if (!tree->one && !tree->zero) {
         Map[tree->ch]=bits;
     }
 
     else {
+        /* recursive cases */
         if (tree->one) {
             Queue<Bit> one = bits;
             one.enqueue(1);
@@ -166,6 +182,7 @@ Queue<Bit> encodeText(const string& str, HuffmanNode* tree) {
 
     for (char ch: str) {
         for (int i = 0; i < dic[ch].size(); i++) {
+            /* add each encoding character of the string into bits */
             Bit bit = dic[ch].dequeue();
             bits.enqueue(bit);
             dic[ch].enqueue(bit);
@@ -187,6 +204,7 @@ Queue<Bit> encodeText(const string& str, HuffmanNode* tree) {
  */
 void encodeTree(HuffmanNode* tree, Queue<Bit>& bits, Queue<char>& leaves) {
 
+    /* base case: if is a leave */
     if (!tree->zero && !tree->one) {
         bits.enqueue(0);
         leaves.enqueue(tree->ch);
@@ -212,6 +230,7 @@ void encodeTree(HuffmanNode* tree, Queue<Bit>& bits, Queue<char>& leaves) {
  */
 HuffmanNode* decodeTree(Queue<Bit>& bits, Queue<char>& leaves) {
 
+    /* base case: if the bit is zero then we create a leave */
     if (bits.peek() == 0) {
         bits.dequeue();
         char ch = leaves.dequeue();
@@ -220,6 +239,9 @@ HuffmanNode* decodeTree(Queue<Bit>& bits, Queue<char>& leaves) {
     }
 
     else {
+
+        /* Recursive case: if the bit is one create a node which will have children */
+        /* first we create the left part of the node*/
         HuffmanNode* node = new HuffmanNode;
         bits.dequeue();
         node->zero = decodeTree(bits, leaves);
@@ -228,6 +250,7 @@ HuffmanNode* decodeTree(Queue<Bit>& bits, Queue<char>& leaves) {
             return node;
         }
 
+        /* Then we create the right part of the node */
         node->one = decodeTree(bits, leaves);
         return node;
     }
@@ -243,11 +266,13 @@ HuffmanNode* decodeTree(Queue<Bit>& bits, Queue<char>& leaves) {
  */
 HuffmanResult compress(const string& text) {
 
+    /* create the tree and encode it */
     HuffmanNode* tree = huffmanTreeFor(text);
     Queue<Bit> treeBits;
     Queue<char> treeLeaves;
     encodeTree(tree, treeBits, treeLeaves);
 
+    /* HuffmanResult containing the encoded tree and message */
     HuffmanResult result;
     result.treeBits = treeBits;
     result.treeLeaves = treeLeaves;
@@ -285,7 +310,154 @@ string decompress(HuffmanResult& file) {
 }
 
 /* * * * * * Test Cases Below This Point * * * * * */
+bool isEncodingTree(HuffmanNode* tree) ;
+bool areEqual(HuffmanNode* lhs, HuffmanNode* rhs);
 
+ADD_TEST("Test huffmanTreeFor") {
+    /* This tree:
+     *                 *
+     *                / \
+     *               O   *
+     *                  / \
+     *                 *   N
+     *                / \
+     *               M   S
+     */
+
+    HuffmanNode* reference = new HuffmanNode {
+        '*',
+            new HuffmanNode { 'O', nullptr, nullptr },
+            new HuffmanNode { '*',
+                new HuffmanNode{ '*',
+                    new HuffmanNode { 'M', nullptr, nullptr },
+                    new HuffmanNode { 'S', nullptr, nullptr }
+                },
+                new HuffmanNode{ 'N', nullptr, nullptr }
+            }
+    };
+
+
+    HuffmanNode* tree = huffmanTreeFor("OOOONNNSSM");
+    EXPECT(isEncodingTree(tree));
+    EXPECT(areEqual(tree, reference));
+
+    deleteTree(reference);
+    deleteTree(tree);
+}
+
+ADD_TEST("Test decodeText ") {
+    /* This tree:
+     *                 *
+     *                / \
+     *               *   D
+     *              / \
+     *             C   *
+     *                / \
+     *               A   B
+     */
+    HuffmanNode* tree = new HuffmanNode {
+        '*',
+            new HuffmanNode { '!',
+                new HuffmanNode { 'C', nullptr, nullptr },
+                new HuffmanNode { '?',
+                    new HuffmanNode { 'A', nullptr, nullptr },
+                    new HuffmanNode { 'B', nullptr, nullptr }
+                }
+            },
+            new HuffmanNode { 'D', nullptr, nullptr }
+    };
+
+    Queue<Bit> bits = { 0,1,1, 0,1,0, 1, 0,1,0, 0,0 };
+
+    EXPECT_EQUAL(decodeText(bits, tree), "BADAC");
+
+    deleteTree(tree);
+}
+
+ADD_TEST("Test encodeText ") {
+    /* This tree:
+     *                 *
+     *                / \
+     *               *   D
+     *              / \
+     *             C   *
+     *                / \
+     *               A   B
+     */
+    HuffmanNode* tree = new HuffmanNode {
+        '*',
+            new HuffmanNode { '!',
+                new HuffmanNode { 'C', nullptr, nullptr },
+                new HuffmanNode { '?',
+                    new HuffmanNode { 'A', nullptr, nullptr },
+                    new HuffmanNode { 'B', nullptr, nullptr }
+                }
+            },
+            new HuffmanNode { 'D', nullptr, nullptr }
+    };
+
+    Queue<Bit> expected = { 0,1,0, 0,1,1, 0,0, 0,0, 1,1,1 };
+
+    EXPECT_EQUAL(encodeText("ABCCDDD", tree), expected);
+
+    deleteTree(tree);
+}
+
+ADD_TEST("Can encode a single leaf.") {
+    HuffmanNode* leaf = new HuffmanNode { 'A', nullptr, nullptr };
+
+    Queue<Bit>  bits;
+    Queue<char> leaves;
+
+    encodeTree(leaf, bits, leaves);
+
+    Queue<Bit>  expectedBits   = { 0 };
+    Queue<char> expectedLeaves = { 'A' };
+
+    EXPECT_EQUAL(bits,   expectedBits);
+    EXPECT_EQUAL(leaves, expectedLeaves);
+
+    deleteTree(leaf);
+}
+
+ADD_TEST("Can decode a single leaf.") {
+    Queue<Bit>  bits   = { 0 };
+    Queue<char> leaves = { 'A' };
+
+    HuffmanNode* tree = decodeTree(bits, leaves);
+    EXPECT(isEncodingTree(tree));
+
+    /* Confirm this is the right tree. */
+    HuffmanNode* expected = new HuffmanNode { 'A', nullptr, nullptr };
+
+    EXPECT(areEqual(tree, expected));
+
+    deleteTree(tree);
+    deleteTree(expected);
+}
+
+#include <fstream>
+ADD_TEST("Compress undoes decompress on example string.") {
+    ifstream ifs("US-Constitution.txt");
+    string test ((istreambuf_iterator<char>(ifs)),
+                           (istreambuf_iterator<char>()));
+
+    HuffmanResult file = compress(test);
+    string result = decompress(file);
+
+    EXPECT_EQUAL(result.size(), test.size());
+    EXPECT(test == result);
+}
+
+
+
+
+
+
+
+
+
+/* * * * * Provided Tests Below This Point * * * * */
 #include <limits>
 
 /* Utility function to test if a purported Huffman tree is indeed a Huffman tree.
@@ -354,51 +526,7 @@ HuffmanNode* strandTreeFor(const string& text, size_t index = 0) {
     };
 }
 
-ADD_TEST("Can encode a single leaf.") {
-    HuffmanNode* leaf = new HuffmanNode { 'A', nullptr, nullptr };
 
-    Queue<Bit>  bits;
-    Queue<char> leaves;
-
-    encodeTree(leaf, bits, leaves);
-
-    Queue<Bit>  expectedBits   = { 0 };
-    Queue<char> expectedLeaves = { 'A' };
-
-    EXPECT_EQUAL(bits,   expectedBits);
-    EXPECT_EQUAL(leaves, expectedLeaves);
-
-    deleteTree(leaf);
-}
-
-ADD_TEST("Can decode a single leaf.") {
-    Queue<Bit>  bits   = { 0 };
-    Queue<char> leaves = { 'A' };
-
-    HuffmanNode* tree = decodeTree(bits, leaves);
-    EXPECT(isEncodingTree(tree));
-
-    /* Confirm this is the right tree. */
-    HuffmanNode* expected = new HuffmanNode { 'A', nullptr, nullptr };
-
-    EXPECT(areEqual(tree, expected));
-
-    deleteTree(tree);
-    deleteTree(expected);
-}
-
-#include <fstream>
-ADD_TEST("Compress undoes decompress on example string.") {
-    ifstream ifs("US-Constitution.txt");
-    string test ((istreambuf_iterator<char>(ifs)),
-                           (istreambuf_iterator<char>()));
-
-    HuffmanResult file = compress(test);
-    string result = decompress(file);
-
-    EXPECT_EQUAL(result.size(), test.size());
-    EXPECT(test == result);
-}
 
 
 
