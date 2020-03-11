@@ -96,10 +96,11 @@ string decodeText(Queue<Bit>& bits, HuffmanNode* tree) {
 
     string text;
 
-    HuffmanNode* next = new HuffmanNode;
-    HuffmanNode* node = tree;
-
     while(!bits.isEmpty()){
+
+        HuffmanNode* next = new HuffmanNode;
+        HuffmanNode* node = tree;
+
         node = tree;
         Bit bit = bits.peek();
 
@@ -132,10 +133,9 @@ string decodeText(Queue<Bit>& bits, HuffmanNode* tree) {
 
         text = text + node->ch;
 
-
     }
 
-    deleteTree(node);
+//    deleteTree(node);
 
     return text;
 }
@@ -194,10 +194,21 @@ Queue<Bit> encodeText(const string& str, HuffmanNode* tree) {
  * the leaves matter, etc.
  */
 void encodeTree(HuffmanNode* tree, Queue<Bit>& bits, Queue<char>& leaves) {
-    /* TODO: Delete this comment and the next few lines, then implement this. */
-    (void) tree;
-    (void) bits;
-    (void) leaves;
+
+    if (!tree->zero && !tree->one) {
+        bits.enqueue(0);
+        leaves.enqueue(tree->ch);
+    }
+
+    else {
+        bits.enqueue(1);
+        if (tree->zero) {
+            encodeTree(tree->zero, bits, leaves);
+        }
+        if (tree->one) {
+            encodeTree(tree->one, bits, leaves);
+        }
+    }
 }
 
 /**
@@ -208,11 +219,28 @@ void encodeTree(HuffmanNode* tree, Queue<Bit>& bits, Queue<char>& leaves) {
  * or bits in them, etc.
  */
 HuffmanNode* decodeTree(Queue<Bit>& bits, Queue<char>& leaves) {
-    /* TODO: Delete this comment and the next few lines, then implement this. */
-    (void) bits;
-    (void) leaves;
-    return nullptr;
+
+    if (bits.peek() == 0) {
+        bits.dequeue();
+        char ch = leaves.dequeue();
+        HuffmanNode* leaf = new HuffmanNode{ch, nullptr, nullptr};
+        return leaf;
+    }
+
+    else {
+        HuffmanNode* node = new HuffmanNode;
+        bits.dequeue();
+        node->zero = decodeTree(bits, leaves);
+
+        if (bits.isEmpty()) {
+            return node;
+        }
+
+        node->one = decodeTree(bits, leaves);
+        return node;
+    }
 }
+
 
 /**
  * Compresses the given text string using Huffman coding, producing as output
