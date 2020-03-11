@@ -286,21 +286,6 @@ string decompress(HuffmanResult& file) {
 
 /* * * * * * Test Cases Below This Point * * * * * */
 
-/* TODO: Add your own custom tests here! */
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* * * * * Provided Tests Below This Point * * * * */
 #include <limits>
 
 /* Utility function to test if a purported Huffman tree is indeed a Huffman tree.
@@ -368,6 +353,63 @@ HuffmanNode* strandTreeFor(const string& text, size_t index = 0) {
         ' ', leaf, strandTreeFor(text, index + 1)
     };
 }
+
+ADD_TEST("Can encode a single leaf.") {
+    HuffmanNode* leaf = new HuffmanNode { 'A', nullptr, nullptr };
+
+    Queue<Bit>  bits;
+    Queue<char> leaves;
+
+    encodeTree(leaf, bits, leaves);
+
+    Queue<Bit>  expectedBits   = { 0 };
+    Queue<char> expectedLeaves = { 'A' };
+
+    EXPECT_EQUAL(bits,   expectedBits);
+    EXPECT_EQUAL(leaves, expectedLeaves);
+
+    deleteTree(leaf);
+}
+
+ADD_TEST("Can decode a single leaf.") {
+    Queue<Bit>  bits   = { 0 };
+    Queue<char> leaves = { 'A' };
+
+    HuffmanNode* tree = decodeTree(bits, leaves);
+    EXPECT(isEncodingTree(tree));
+
+    /* Confirm this is the right tree. */
+    HuffmanNode* expected = new HuffmanNode { 'A', nullptr, nullptr };
+
+    EXPECT(areEqual(tree, expected));
+
+    deleteTree(tree);
+    deleteTree(expected);
+}
+
+#include <fstream>
+ADD_TEST("Compress undoes decompress on example string.") {
+    ifstream ifs("US-Constitution.txt");
+    string test ((istreambuf_iterator<char>(ifs)),
+                           (istreambuf_iterator<char>()));
+
+    HuffmanResult file = compress(test);
+    string result = decompress(file);
+
+    EXPECT_EQUAL(result.size(), test.size());
+    EXPECT(test == result);
+}
+
+
+
+
+
+
+
+
+
+
+/* * * * * Provided Tests Below This Point * * * * */
 
 ADD_TEST("Provided Test: huffmanTreeFor reports errors on invalid inputs.") {
     EXPECT_ERROR(huffmanTreeFor(""));    // No characters
