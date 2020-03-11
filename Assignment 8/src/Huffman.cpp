@@ -6,6 +6,7 @@
 #include <string>
 using namespace std;
 
+
 /**
  * Deallocates all nodes in a Huffman tree. We've provided this helper function
  * to you since we also use it in our test driver and figured you might want
@@ -31,37 +32,36 @@ void deleteTree(HuffmanNode* tree) {
  * second tree as the one subtree.
  */
 HuffmanNode* huffmanTreeFor(const string& str) {
+
     HashMap<char, double> frequencies;
     PriorityQueue<HuffmanNode*> queue;
 
-    if (str.empty()){
+    if (str.empty()) {
         error("The input is empty");
     }
 
-
-    for (char ch: str){
-        if (!frequencies.containsKey(ch)){
+    for (char ch: str) {
+        if (!frequencies.containsKey(ch)) {
             frequencies[ch] = 1;
         }
-        else{
+        else {
             frequencies[ch]++;
         }
     }
 
-    if (frequencies.size()==1){
+    if (frequencies.size()==1) {
         error("There is only one character");
     }
 
-
-    for (char ch: frequencies){
+    for (char ch: frequencies) {
         HuffmanNode* node = new HuffmanNode;
         node->ch = ch;
         node->one =  nullptr;
         node->zero = nullptr;
-        queue.enqueue(node,frequencies[ch]);
+        queue.enqueue(node, frequencies[ch]);
     }
 
-    while(queue.size() != 1){
+    while(queue.size() != 1) {
 
         double prio0 = queue.peekPriority();
         HuffmanNode* node0 = queue.dequeue();
@@ -75,11 +75,12 @@ HuffmanNode* huffmanTreeFor(const string& str) {
         node_parent->zero = node0;
         node_parent->one  = node1;
 
-
         queue.enqueue(node_parent, (prio0+prio1));
 
     }
+
     return queue.dequeue();
+
 }
 
 /**
@@ -96,37 +97,26 @@ string decodeText(Queue<Bit>& bits, HuffmanNode* tree) {
 
     string text;
 
-    while(!bits.isEmpty()){
+    while(!bits.isEmpty()) {
 
         HuffmanNode* next;
         HuffmanNode* node = tree;
 
         Bit bit = bits.peek();
+        if (bit == 0) next = node->zero;
+        else next = node->one;
 
-        if (bit == 0){
-            next = node->zero;
-        }
-        else{
-            next = node->one;
-        }
+        while (next != nullptr) {
 
-
-        while(next != nullptr){
            node = next;
            bit = bits.dequeue();
 
-           if (bits.isEmpty()){
-               break;
-           }
+           if (bits.isEmpty()) break;
 
            bit = bits.peek();
+           if (bit == 0) next = node->zero;
+           else next = node->one;
 
-           if (bit == 0){
-               next = node->zero;
-           }
-           else{
-               next = node->one;
-           }
         }
 
         text = text + node->ch;
@@ -145,37 +135,43 @@ string decodeText(Queue<Bit>& bits, HuffmanNode* tree) {
  * characters that make up the input string.
  */
 
-HashMap<char,Queue<Bit>> get_dic(HuffmanNode* tree, Queue<Bit> bits, HashMap<char,Queue<Bit>>& Map){
-    if (!tree->one && !tree->zero){
+HashMap<char, Queue<Bit>> get_dic(HuffmanNode* tree, Queue<Bit> bits, HashMap<char, Queue<Bit>>& Map){
+
+    if (!tree->one && !tree->zero) {
         Map[tree->ch]=bits;
     }
-    else{
-        if (tree->one){
+
+    else {
+        if (tree->one) {
             Queue<Bit> one = bits;
             one.enqueue(1);
             Map = get_dic(tree->one, one, Map);
         }
-        if (tree->zero){
+        if (tree->zero) {
             Queue<Bit> zero = bits;
             zero.enqueue(0);
             Map = get_dic(tree->zero, zero, Map);
         }
     }
+
     return Map;
+
 }
 
 Queue<Bit> encodeText(const string& str, HuffmanNode* tree) {
-    Queue<Bit> bits;
-    HashMap<char,Queue<Bit>> Map;
-    HashMap<char,Queue<Bit>> dic = get_dic(tree, bits, Map);
 
-    for (char ch: str){
-        for (int i=0; i<dic[ch].size();i++){
+    Queue<Bit> bits;
+    HashMap<char, Queue<Bit>> Map;
+    HashMap<char, Queue<Bit>> dic = get_dic(tree, bits, Map);
+
+    for (char ch: str) {
+        for (int i = 0; i < dic[ch].size(); i++) {
             Bit bit = dic[ch].dequeue();
             bits.enqueue(bit);
             dic[ch].enqueue(bit);
         }
     }
+
     return bits;
 }
 
